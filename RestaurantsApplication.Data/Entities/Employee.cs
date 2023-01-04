@@ -11,7 +11,7 @@ namespace RestaurantsApplication.Data.Entities
         [MaxLength(20)]
         public string LastName { get; set; }
 
-        [MaxLength(8)]
+        [StringLength(8)]
         public string Code { get; set; }
     }
 }
