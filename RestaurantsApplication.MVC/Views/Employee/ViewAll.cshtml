@@ -1,0 +1,48 @@
+﻿@model IEnumerable<EmployeeWithIdViewModel>
+
+<a asp-controller="Employee" asp-action="AddEmployee">
+	<input type="submit" value="Add employee" class="btn btn-primary mb-3" />
+</a>
+<table class="table table-light">
+	<thead>
+		<tr>
+			<th scope="col">First name</th>
+			<th scope="col">Last name</th>
+			<th scope="col">Code</th>
+			<th scope="col"></th>
+			<th scope="col"></th>
+			<th scope="col"></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var d in Model)
+		{
+			<tr>
+				<td>
+					@d.FirstName
+				</td>
+				<td>
+					@d.LastName
+				</td>
+				<td>
+					@d.Code
+				</td>
+				<td>
+					<a asp-route-employeeCode="@d.Code" asp-controller="Employment" asp-action="AddEmployment">
+						<input type="submit" value="Employ" class="btn btn-success" />
+					</a>
+				</td>
+				<td>
+					<a asp-route-employeeId="@d.Id" asp-controller="Employee" asp-action="Edit">
+						<input type="submit" value="Edit" class="btn btn-success" />
+					</a>
+				</td>
+				<td>
+					<a asp-route-employeeId="@d.Id" asp-controller="Employee" asp-action="Delete">
+						<input type="submit" value="Delete" class="btn btn-danger" />
+					</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

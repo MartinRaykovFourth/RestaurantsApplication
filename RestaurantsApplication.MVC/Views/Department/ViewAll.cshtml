@@ -1,0 +1,38 @@
+﻿@model IEnumerable<DepartmentWithLocationViewModel>
+
+<a asp-controller="Department" asp-action="AddDepartment">
+	<input type="submit" value="Add department" class="btn btn-primary mb-3"/>
+</a>
+<table class="table table-light">
+	<thead>
+		<tr>
+			<th scope="col">Department</th>
+			<th scope="col">Location</th>
+			<th scope="col"></th>
+			<th scope="col"></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var d in Model)
+		{
+			<tr>
+				<td>
+					@d.Name
+				</td>
+				<td>
+					@d.LocationName
+				</td>
+				<td >
+					<a asp-route-departmentId="@d.Id" asp-controller="Department" asp-action="Edit">
+						<input type="submit" value="Edit" class="btn btn-success"/>
+					</a>
+				</td>
+				<td>
+					<a asp-route-departmentId="@d.Id" asp-controller="Department" asp-action="Delete">
+						<input type="submit" value="Delete" class="btn btn-danger" />
+					</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

@@ -29,11 +29,12 @@ namespace RestaurantsApplication.MVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddEmployment()
+        public async Task<IActionResult> AddEmployment(string employeeCode)
         {
             var model = new EmploymentShortInfoViewModel()
             {
                 StartDate = DateTime.Now,
+                EmployeeCode = employeeCode,
                 Roles = await _roleService.GetRolesWithIdsAsync(),
                 Locations = await _locationService.GetLocationsWithIdsAsync(),
                 Departments = await _departmentService.GetDepartmentsWithIdsAsync()
@@ -82,7 +83,7 @@ namespace RestaurantsApplication.MVC.Controllers
             await _employmentService.AddEmploymentAsync(dto);
 
             TempData["message"] = EmploymentAdded;
-            return RedirectToAction(nameof(AddEmployment));
+            return RedirectToAction("ViewAll","Employee");
         }
 
         private EmploymentShortInfoDTO MapDTO(EmploymentShortInfoViewModel model)

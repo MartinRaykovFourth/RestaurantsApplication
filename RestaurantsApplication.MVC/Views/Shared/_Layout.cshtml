@@ -23,16 +23,13 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="AddEmployee">Add employee</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="ViewAll">Employees</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Location" asp-action="AddLocation">Add location</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Location" asp-action="ViewAll">Locations</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Department" asp-action="AddDepartment">Add department</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Employment" asp-action="AddEmployment">Add employment</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Department" asp-action="ViewAll">Departments</a>
                         </li>
                     </ul>
                 </div>
@@ -45,8 +42,7 @@
             {
                 <div class="alert alert-success alert-dismissible fade show">
                     @TempData["message"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert">
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             }
             @RenderBody()

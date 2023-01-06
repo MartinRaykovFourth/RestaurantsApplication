@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RestaurantsApplication.Data.Entities;
 using RestaurantsApplication.DTOs.DepartmentDTOs;
 using RestaurantsApplication.MVC.Models.Department;
 using RestaurantsApplication.Services.Contracts;
@@ -46,6 +47,57 @@ namespace RestaurantsApplication.MVC.Controllers
 
             TempData["message"] = DepartmentAdded;
             return RedirectToAction(nameof(AddDepartment));
+        }
+
+        public async Task<IActionResult> ViewAll()
+        {
+            var dtos = await _departmentService.GetAllAsync();
+
+            IEnumerable<DepartmentWithLocationViewModel> models = dtos.Select(d => new DepartmentWithLocationViewModel
+            {
+                Id = d.Id,
+                Name = d.Name,
+                LocationName = d.LocationName
+            })
+                .ToList();
+
+            return View(models);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int departmentId)
+        {
+            var dto = await _departmentService.GetByIdAsync(departmentId);
+
+            var model = new DepartmentFullInfoViewModel()
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                LocationId=dto.LocationId,
+                Locations = await _locationService.GetLocationsWithIdsAsync()
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(DepartmentFullInfoViewModel model)
+        {
+            if(!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var dto = new DepartmentFullInfoDTO()
+            {
+                Id = model.Id,
+                Name = model.Name,
+                LocationId = model.LocationId
+            };
+
+            await _departmentService.EditAsync(dto);
+
+            return RedirectToAction(nameof(ViewAll));
         }
     }
 }
