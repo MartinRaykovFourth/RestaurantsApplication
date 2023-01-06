@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestaurantsApplication.MVC"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestaurantsApplication.Data", "RestaurantsApplication.Data\RestaurantsApplication.Data.csproj", "{A7FFFE10-7611-48F3-9D68-B9337E929C69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestaurantsApplication.DTOs", "RestaurantsApplication.DTOs\RestaurantsApplication.DTOs.csproj", "{35483A02-4434-43CE-B158-0E6A7A649A0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestaurantsApplication.DTOs", "RestaurantsApplication.DTOs\RestaurantsApplication.DTOs.csproj", "{35483A02-4434-43CE-B158-0E6A7A649A0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestaurantsApplication.Services", "RestaurantsApplication.Services\RestaurantsApplication.Services.csproj", "{CFA3F2AC-B5E5-4EE9-97C5-A8DCBCF66D8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestaurantsApplication.Services", "RestaurantsApplication.Services\RestaurantsApplication.Services.csproj", "{CFA3F2AC-B5E5-4EE9-97C5-A8DCBCF66D8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestaurantsApplication.Api", "RestaurantsApplication.Api\RestaurantsApplication.Api.csproj", "{114C0C34-0D96-4C3A-834D-51909DEFA0B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{CFA3F2AC-B5E5-4EE9-97C5-A8DCBCF66D8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFA3F2AC-B5E5-4EE9-97C5-A8DCBCF66D8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFA3F2AC-B5E5-4EE9-97C5-A8DCBCF66D8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{114C0C34-0D96-4C3A-834D-51909DEFA0B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{114C0C34-0D96-4C3A-834D-51909DEFA0B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{114C0C34-0D96-4C3A-834D-51909DEFA0B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{114C0C34-0D96-4C3A-834D-51909DEFA0B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

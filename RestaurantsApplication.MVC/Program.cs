@@ -9,10 +9,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<RestaurantsContext>(options =>
-options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<RestaurantsContext>(
+    options => 
+        options.UseSqlServer(
+            connectionString,
+            b => b.MigrationsAssembly("RestaurantsApplication.Data")));
 
+builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IEmploymentService, EmploymentService>();
+builder.Services.AddScoped<IValidatorService, ValidatorService>();
 
 
 var app = builder.Build();

@@ -10,7 +10,7 @@ namespace RestaurantsApplication.Data.Entities
         [MaxLength(50)]
         public string Name { get; set; }
 
-        [StringLength(8)]
+        [StringLength(8, MinimumLength = 8)]
         public string Code { get; set;}
 
         public List<Department> Departments { get; set; } = new List<Department>();

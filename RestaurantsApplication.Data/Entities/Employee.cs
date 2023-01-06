@@ -11,7 +11,8 @@ namespace RestaurantsApplication.Data.Entities
         [MaxLength(20)]
         public string LastName { get; set; }
 
-        [StringLength(8)]
+        [StringLength(8,MinimumLength = 8)]
         public string Code { get; set; }
+        public List<Employment> Employments { get; set; } = new List<Employment>();
     }
 }

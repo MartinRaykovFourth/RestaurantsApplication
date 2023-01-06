@@ -14,7 +14,7 @@ namespace RestaurantsApplication.Services.Services
             _context = context;
         }
 
-        public async Task AddEmployee(EmployeeShortInfoDTO dto)
+        public async Task AddEmployeeAsync(EmployeeShortInfoDTO dto)
         {
             var employee = new Employee
             {

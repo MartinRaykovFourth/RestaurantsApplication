@@ -2,6 +2,7 @@
 using RestaurantsApplication.DTOs.EmployeeDTOs;
 using RestaurantsApplication.MVC.Models.Employee;
 using RestaurantsApplication.Services.Contracts;
+using static RestaurantsApplication.MVC.Messages.SuccessMessages;
 
 namespace RestaurantsApplication.MVC.Controllers
 {
@@ -37,9 +38,9 @@ namespace RestaurantsApplication.MVC.Controllers
                 Code = model.Code
             };
 
-            await _employeeService.AddEmployee(dto);
+            await _employeeService.AddEmployeeAsync(dto);
 
-            TempData["message"] = "You have succsessfully added an employee!";
+            TempData["message"] = EmployeeAdded;
             return RedirectToAction(nameof(AddEmployee));
         }
     }
