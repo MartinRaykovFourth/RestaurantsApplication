@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RestaurantsApplication.Data;
 using RestaurantsApplication.Data.Entities;
-using RestaurantsApplication.DTOs.DepartmentDTOs;
 using RestaurantsApplication.DTOs.EmployeeDTOs;
-using RestaurantsApplication.DTOs.EmploymentDTOs;
 using RestaurantsApplication.Services.Contracts;
 
 namespace RestaurantsApplication.Services.Services
@@ -33,6 +31,7 @@ namespace RestaurantsApplication.Services.Services
         public async Task<IEnumerable<EmployeeWithIdDTO>> GetAllAsync()
         {
             return await _context.Employees
+                .Where(e => e.IsDeleted == false)
                 .Select(e => new EmployeeWithIdDTO()
                 {
                     Id = e.Id,
@@ -69,5 +68,24 @@ namespace RestaurantsApplication.Services.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeleteAsync(int employeeId)
+        {
+            var employee = await _context.Employees
+                .Include(e => e.Employments)
+                .SingleAsync(e => e.Id == employeeId);
+
+            foreach (var employment in 
+                employee.Employments
+                .Where(e => !e.IsDeleted)
+                .ToList())
+            {
+                employment.EndDate = DateTime.Now;
+                employment.IsDeleted = true;
+            }
+
+            employee.IsDeleted = true;
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

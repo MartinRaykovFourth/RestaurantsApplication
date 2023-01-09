@@ -98,5 +98,12 @@ namespace RestaurantsApplication.MVC.Controllers
 
             return RedirectToAction(nameof(ViewAll));
         }
+
+        public async Task<IActionResult> Delete(int departmentId)
+        {
+           await _departmentService.DeleteAsync(departmentId);
+
+            return RedirectToAction(nameof(ViewAll));
+        }
     }
 }

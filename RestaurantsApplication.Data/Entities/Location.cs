@@ -14,5 +14,6 @@ namespace RestaurantsApplication.Data.Entities
         public string Code { get; set;}
 
         public List<Department> Departments { get; set; } = new List<Department>();
+        public bool IsDeleted { get; set; }
     }
 }

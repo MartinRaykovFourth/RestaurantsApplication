@@ -9,5 +9,6 @@ namespace RestaurantsApplication.Services.Contracts
         public Task<IEnumerable<LocationWithCodeDTO>> GetAllAsync();
         public Task<LocationWithCodeDTO> GetByIdAsync(int locationId);
         public Task EditAsync(LocationWithCodeDTO dto);
+        public Task DeleteAsync(int locationId);
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RestaurantsApplication.Data;
 using RestaurantsApplication.Data.Entities;
-using RestaurantsApplication.DTOs.DepartmentDTOs;
 using RestaurantsApplication.DTOs.LocationDTOs;
 using RestaurantsApplication.Services.Contracts;
 
@@ -10,15 +9,17 @@ namespace RestaurantsApplication.Services.Services
     public class LocationService : ILocationService
     {
         private readonly RestaurantsContext _context;
-
-        public LocationService(RestaurantsContext context)
+        private readonly IDepartmentService _departmentService;
+        public LocationService(RestaurantsContext context, IDepartmentService departmentService)
         {
             _context = context;
+            _departmentService = departmentService;
         }
 
         public async Task<IEnumerable<LocationWithIdDTO>> GetLocationsWithIdsAsync()
         {
             return await _context.Locations
+                .Where(l => l.IsDeleted == false)
                 .Select(l => new LocationWithIdDTO
                 {
                     Id = l.Id,
@@ -42,6 +43,7 @@ namespace RestaurantsApplication.Services.Services
         public async Task<IEnumerable<LocationWithCodeDTO>> GetAllAsync()
         {
             return await _context.Locations
+                .Where(l => l.IsDeleted == false)
                 .Select(l => new LocationWithCodeDTO
                 {
                     Id = l.Id,
@@ -72,6 +74,25 @@ namespace RestaurantsApplication.Services.Services
 
             location.Name = dto.Name;
             location.Code = dto.Code;
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int locationId)
+        {
+            var location = await _context.Locations.FindAsync(locationId);
+
+            var departments = await _context.Departments
+                .Where(d => d.LocationId == locationId && d.IsDeleted == false)
+                .Select(d => d.Id)
+                .ToListAsync();
+
+            foreach (var d in departments)
+            {
+                await _departmentService.DeleteAsync(d);
+            }
+
+            location.IsDeleted = true;
 
             await _context.SaveChangesAsync();
         }

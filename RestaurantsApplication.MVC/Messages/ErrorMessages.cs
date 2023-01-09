@@ -16,6 +16,7 @@
         public const string CodeRequiredError = "A code is required";
 
         public const string EarlierEndDateMessage = "The end date of the employment can not be earlier than the start date!";
+        public const string CantDeleteMainEmployment = "To delete this employment first choose another employment as main!";
 
         public const string StartDateRequiredError = "Start date is required!";
 

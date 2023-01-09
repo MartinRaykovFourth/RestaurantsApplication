@@ -14,5 +14,6 @@ namespace RestaurantsApplication.Data.Entities
         [StringLength(8,MinimumLength = 8)]
         public string Code { get; set; }
         public List<Employment> Employments { get; set; } = new List<Employment>();
+        public bool IsDeleted { get; set; }
     }
 }

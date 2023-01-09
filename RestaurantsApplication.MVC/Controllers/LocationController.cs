@@ -2,6 +2,7 @@
 using RestaurantsApplication.DTOs.LocationDTOs;
 using RestaurantsApplication.MVC.Models.Location;
 using RestaurantsApplication.Services.Contracts;
+using RestaurantsApplication.Services.Services;
 using static RestaurantsApplication.MVC.Messages.SuccessMessages;
 
 namespace RestaurantsApplication.MVC.Controllers
@@ -88,6 +89,13 @@ namespace RestaurantsApplication.MVC.Controllers
             };
 
             await _locationService.EditAsync(dto);
+
+            return RedirectToAction(nameof(ViewAll));
+        }
+
+        public async Task<IActionResult> Delete(int locationId)
+        {
+            await _locationService.DeleteAsync(locationId);
 
             return RedirectToAction(nameof(ViewAll));
         }

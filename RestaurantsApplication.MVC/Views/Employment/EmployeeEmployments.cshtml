@@ -1,0 +1,95 @@
+﻿@model IEnumerable<EmploymentDetailsViewModel>
+
+<table class="table table-light">
+	<thead>
+		<tr>
+			<th scope="col">Start date</th>
+			<th scope="col">End date</th>
+			<th scope="col">Role</th>
+			<th scope="col">Location</th>
+			<th scope="col">Department</th>
+			<th scope="col">Rate</th>
+			<th scope="col">Is main</th>
+			<th scope="col"></th>
+			<th scope="col"></th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var e in Model)
+		{
+			if (e.IsMain)
+			{
+				<tr >
+					<td style="background-color:lightgreen;">
+						@e.StartDate
+					</td>
+					<td style="background-color:lightgreen;">
+						@e.EndDate
+					</td>
+					<td style="background-color:lightgreen;">
+						@e.RoleName
+					</td>
+					<td style="background-color:lightgreen;">
+						@e.LocationName
+					</td>
+					<td style="background-color:lightgreen;">
+						@e.DepartmentName
+					</td>
+					<td style="background-color:lightgreen;">
+						@e.Rate
+					</td>
+					<td style="background-color:lightgreen;">
+						@e.IsMain
+					</td>
+					<td style="background-color:lightgreen;">
+						<a asp-route-employmentId="@e.Id" asp-controller="Employment" asp-action="Edit">
+							<input type="submit" value="Edit" class="btn btn-success" />
+						</a>
+					</td>
+					<td style="background-color:lightgreen;">
+						<a asp-route-employmentId="@e.Id" asp-controller="Employment" asp-action="Delete">
+							<input type="submit" value="Delete" class="btn btn-danger" />
+						</a>
+					</td>
+				</tr>
+			}
+			else 
+			{
+				<tr>
+					<td>
+						@e.StartDate
+					</td>
+					<td>
+						@e.EndDate
+					</td>
+					<td>
+						@e.RoleName
+					</td>
+					<td>
+						@e.LocationName
+					</td>
+					<td>
+						@e.DepartmentName
+					</td>
+					<td>
+						@e.Rate
+					</td>
+					<td>
+						@e.IsMain
+					</td>
+
+					<td>
+						<a asp-route-employmentId="@e.Id" asp-controller="Employment" asp-action="Edit">
+							<input type="submit" value="Edit" class="btn btn-success" />
+						</a>
+					</td>
+					<td>
+						<a asp-route-employmentId="@e.Id" asp-controller="Employment" asp-action="Delete">
+							<input type="submit" value="Delete" class="btn btn-danger" />
+						</a>
+					</td>
+				</tr>
+			}
+		}
+	</tbody>
+</table>

@@ -12,33 +12,39 @@
 			<th scope="col"></th>
 			<th scope="col"></th>
 			<th scope="col"></th>
+			<th scope="col"></th>
 		</tr>
 	</thead>
 	<tbody>
-		@foreach (var d in Model)
+		@foreach (var e in Model)
 		{
 			<tr>
 				<td>
-					@d.FirstName
+					@e.FirstName
 				</td>
 				<td>
-					@d.LastName
+					@e.LastName
 				</td>
 				<td>
-					@d.Code
+					@e.Code
 				</td>
 				<td>
-					<a asp-route-employeeCode="@d.Code" asp-controller="Employment" asp-action="Add">
+					<a asp-route-employeeId="@e.Id" asp-controller="Employment" asp-action="EmployeeEmployments">
+						<input type="submit" value="View employments" class="btn btn-success" />
+					</a>
+				</td>
+				<td>
+					<a asp-route-employeeCode="@e.Code" asp-controller="Employment" asp-action="Add">
 						<input type="submit" value="Employ" class="btn btn-success" />
 					</a>
 				</td>
 				<td>
-					<a asp-route-employeeId="@d.Id" asp-controller="Employee" asp-action="Edit">
+					<a asp-route-employeeId="@e.Id" asp-controller="Employee" asp-action="Edit">
 						<input type="submit" value="Edit" class="btn btn-success" />
 					</a>
 				</td>
 				<td>
-					<a asp-route-employeeId="@d.Id" asp-controller="Employee" asp-action="Delete">
+					<a asp-route-employeeId="@e.Id" asp-controller="Employee" asp-action="Delete">
 						<input type="submit" value="Delete" class="btn btn-danger" />
 					</a>
 				</td>

@@ -24,5 +24,7 @@ namespace RestaurantsApplication.Data.Entities
         public bool IsMain { get; set; }
 
         public decimal Rate { get; set; }
+        public bool IsDeleted { get; set; }
+
     }
 }

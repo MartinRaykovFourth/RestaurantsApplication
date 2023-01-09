@@ -1,4 +1,4 @@
-﻿namespace RestaurantsApplication.DTOs.EmploymentDTOs
+﻿namespace RestaurantsApplication.DTOs.EmployeeDTOs
 {
     public class EmployeeWithIdDTO
     {

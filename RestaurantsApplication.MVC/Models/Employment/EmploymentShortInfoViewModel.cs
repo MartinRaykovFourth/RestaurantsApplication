@@ -8,6 +8,7 @@ namespace RestaurantsApplication.MVC.Models.Employment
 {
     public class EmploymentShortInfoViewModel
     {
+        public int Id { get; set; }
         [Required(ErrorMessage = StartDateRequiredError)]
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }

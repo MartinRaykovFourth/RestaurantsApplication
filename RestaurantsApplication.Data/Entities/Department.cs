@@ -15,5 +15,6 @@ namespace RestaurantsApplication.Data.Entities
 
         [ForeignKey(nameof(LocationId))]
         public Location Location { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
