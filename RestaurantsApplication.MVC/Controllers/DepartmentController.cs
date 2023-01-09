@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RestaurantsApplication.Data.Entities;
 using RestaurantsApplication.DTOs.DepartmentDTOs;
 using RestaurantsApplication.MVC.Models.Department;
 using RestaurantsApplication.Services.Contracts;
@@ -19,7 +18,7 @@ namespace RestaurantsApplication.MVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddDepartment()
+        public async Task<IActionResult> Add()
         {
             var model = new DepartmentShortInfoViewModel()
             {
@@ -30,7 +29,7 @@ namespace RestaurantsApplication.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddDepartment(DepartmentShortInfoViewModel model)
+        public async Task<IActionResult> Add(DepartmentShortInfoViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -43,10 +42,10 @@ namespace RestaurantsApplication.MVC.Controllers
                 LocationId = model.LocationId
             };
 
-            await _departmentService.AddDepartmentAsync(dto);
+            await _departmentService.AddAsync(dto);
 
             TempData["message"] = DepartmentAdded;
-            return RedirectToAction(nameof(AddDepartment));
+            return RedirectToAction(nameof(Add));
         }
 
         public async Task<IActionResult> ViewAll()

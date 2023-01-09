@@ -27,7 +27,7 @@ namespace RestaurantsApplication.Services.Services
                 .ToListAsync();
         }
 
-        public async Task AddDepartmentAsync(DepartmentShortInfoDTO dto)
+        public async Task AddAsync(DepartmentShortInfoDTO dto)
         {
             var department = new Department()
             {

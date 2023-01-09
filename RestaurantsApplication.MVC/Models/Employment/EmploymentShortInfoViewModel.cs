@@ -14,6 +14,7 @@ namespace RestaurantsApplication.MVC.Models.Employment
         public int DepartmentId { get; set; }
         public int LocationId { get; set; }
         public int RoleId { get; set; }
+
         [Required(ErrorMessage = CodeRequiredError)]
         [StringLength(8, MinimumLength = 8, ErrorMessage = CodeError)]
         public string EmployeeCode { get; set; }

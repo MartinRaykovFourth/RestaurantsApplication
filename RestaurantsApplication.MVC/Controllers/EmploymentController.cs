@@ -29,7 +29,7 @@ namespace RestaurantsApplication.MVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddEmployment(string employeeCode)
+        public async Task<IActionResult> Add(string employeeCode)
         {
             var model = new EmploymentShortInfoViewModel()
             {
@@ -44,7 +44,7 @@ namespace RestaurantsApplication.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddEmployment(EmploymentShortInfoViewModel model)
+        public async Task<IActionResult> Add(EmploymentShortInfoViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -80,7 +80,7 @@ namespace RestaurantsApplication.MVC.Controllers
 
             var dto = MapDTO(model);
 
-            await _employmentService.AddEmploymentAsync(dto);
+            await _employmentService.AddAsync(dto);
 
             TempData["message"] = EmploymentAdded;
             return RedirectToAction("ViewAll","Employee");

@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RestaurantsApplication.DTOs.DepartmentDTOs;
 using RestaurantsApplication.DTOs.LocationDTOs;
-using RestaurantsApplication.MVC.Models.Department;
 using RestaurantsApplication.MVC.Models.Location;
 using RestaurantsApplication.Services.Contracts;
-using RestaurantsApplication.Services.Services;
 using static RestaurantsApplication.MVC.Messages.SuccessMessages;
 
 namespace RestaurantsApplication.MVC.Controllers
@@ -19,7 +16,7 @@ namespace RestaurantsApplication.MVC.Controllers
         }
 
         [HttpGet]
-        public IActionResult AddLocation()
+        public IActionResult Add()
         {
             var model = new LocationShortInfoViewModel();
 
@@ -27,7 +24,7 @@ namespace RestaurantsApplication.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddLocation(LocationShortInfoViewModel model)
+        public async Task<IActionResult> Add(LocationShortInfoViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -40,10 +37,10 @@ namespace RestaurantsApplication.MVC.Controllers
                 Code = model.Code
             };
 
-            await _locationService.AddLocationAsync(dto);
+            await _locationService.AddAsync(dto);
 
             TempData["message"] = LocationAdded;
-            return RedirectToAction(nameof(AddLocation));
+            return RedirectToAction(nameof(Add));
         }
 
         public async Task<IActionResult> ViewAll()

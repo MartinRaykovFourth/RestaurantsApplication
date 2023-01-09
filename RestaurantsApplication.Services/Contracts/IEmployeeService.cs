@@ -5,7 +5,7 @@ namespace RestaurantsApplication.Services.Contracts
 {
     public interface IEmployeeService
     {
-        public Task AddEmployeeAsync(EmployeeShortInfoDTO dto);
+        public Task AddAsync(EmployeeShortInfoDTO dto);
         public Task<IEnumerable<EmployeeWithIdDTO>> GetAllAsync();
         public Task<EmployeeWithIdDTO> GetByIdAsync(int employeeId);
         public Task EditAsync(EmployeeWithIdDTO dto);

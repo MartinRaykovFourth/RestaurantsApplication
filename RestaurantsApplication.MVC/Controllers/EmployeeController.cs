@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RestaurantsApplication.DTOs.DepartmentDTOs;
 using RestaurantsApplication.DTOs.EmployeeDTOs;
 using RestaurantsApplication.DTOs.EmploymentDTOs;
-using RestaurantsApplication.MVC.Models.Department;
 using RestaurantsApplication.MVC.Models.Employee;
 using RestaurantsApplication.Services.Contracts;
-using RestaurantsApplication.Services.Services;
 using static RestaurantsApplication.MVC.Messages.SuccessMessages;
 
 namespace RestaurantsApplication.MVC.Controllers
@@ -20,7 +17,7 @@ namespace RestaurantsApplication.MVC.Controllers
         }
 
         [HttpGet]
-        public IActionResult AddEmployee()
+        public IActionResult Add()
         {
             var model = new EmployeeShortInfoViewModel();
 
@@ -28,7 +25,7 @@ namespace RestaurantsApplication.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddEmployee(EmployeeShortInfoViewModel model)
+        public async Task<IActionResult> Add(EmployeeShortInfoViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -42,10 +39,10 @@ namespace RestaurantsApplication.MVC.Controllers
                 Code = model.Code
             };
 
-            await _employeeService.AddEmployeeAsync(dto);
+            await _employeeService.AddAsync(dto);
 
             TempData["message"] = EmployeeAdded;
-            return RedirectToAction(nameof(AddEmployee));
+            return RedirectToAction(nameof(Add));
         }
 
         public async Task<IActionResult> ViewAll()

@@ -4,6 +4,6 @@ namespace RestaurantsApplication.Services.Contracts
 {
     public interface IEmploymentService
     {
-        public Task AddEmploymentAsync(EmploymentShortInfoDTO dto);
+        public Task AddAsync(EmploymentShortInfoDTO dto);
     }
 }

@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<EmployeeWithIdViewModel>
 
-<a asp-controller="Employee" asp-action="AddEmployee">
+<a asp-controller="Employee" asp-action="Add">
 	<input type="submit" value="Add employee" class="btn btn-primary mb-3" />
 </a>
 <table class="table table-light">
@@ -28,7 +28,7 @@
 					@d.Code
 				</td>
 				<td>
-					<a asp-route-employeeCode="@d.Code" asp-controller="Employment" asp-action="AddEmployment">
+					<a asp-route-employeeCode="@d.Code" asp-controller="Employment" asp-action="Add">
 						<input type="submit" value="Employ" class="btn btn-success" />
 					</a>
 				</td>

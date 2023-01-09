@@ -27,7 +27,7 @@ namespace RestaurantsApplication.Services.Services
                 .ToListAsync();
         }
 
-        public async Task AddLocationAsync(LocationShortInfoDTO dto)
+        public async Task AddAsync(LocationShortInfoDTO dto)
         {
             var location = new Location()
             {
