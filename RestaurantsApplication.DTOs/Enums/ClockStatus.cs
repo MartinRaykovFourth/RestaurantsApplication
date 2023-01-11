@@ -1,4 +1,4 @@
-﻿namespace RestaurantsApplication.Api.Enums
+﻿namespace RestaurantsApplication.DTOs.Enums
 {
     public enum ClockStatus
     {

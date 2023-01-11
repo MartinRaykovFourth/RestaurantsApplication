@@ -2,7 +2,6 @@
 using RestaurantsApplication.DTOs.LocationDTOs;
 using RestaurantsApplication.MVC.Models.Location;
 using RestaurantsApplication.Services.Contracts;
-using RestaurantsApplication.Services.Services;
 using static RestaurantsApplication.MVC.Messages.SuccessMessages;
 
 namespace RestaurantsApplication.MVC.Controllers

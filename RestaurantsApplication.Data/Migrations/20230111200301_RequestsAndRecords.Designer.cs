@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RestaurantsApplication.Data;
 
@@ -11,9 +12,10 @@ using RestaurantsApplication.Data;
 namespace RestaurantsApplication.Data.Migrations
 {
     [DbContext(typeof(RestaurantsContext))]
-    partial class RestaurantsContextModelSnapshot : ModelSnapshot
+    [Migration("20230111200301_RequestsAndRecords")]
+    partial class RequestsAndRecords
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -219,43 +221,6 @@ namespace RestaurantsApplication.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Manager"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Chef"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Bar Server"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Waiter"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Runner"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Dishwasher"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Cleaner"
-                        });
                 });
 
             modelBuilder.Entity("RestaurantsApplication.Data.Entities.Shift", b =>

@@ -11,4 +11,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RestaurantsApplication.Data\RestaurantsApplication.Data.csproj" />
+    <ProjectReference Include="..\RestaurantsApplication.DTOs\RestaurantsApplication.DTOs.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -29,13 +29,13 @@
 					@e.Code
 				</td>
 				<td>
-					<a asp-route-employeeId="@e.Id" asp-controller="Employment" asp-action="EmployeeEmployments">
-						<input type="submit" value="View employments" class="btn btn-success" />
+					<a asp-route-employeeCode="@e.Code" asp-controller="Employment" asp-action="Add">
+						<input type="submit" value="Employ" class="btn btn-success" />
 					</a>
 				</td>
 				<td>
-					<a asp-route-employeeCode="@e.Code" asp-controller="Employment" asp-action="Add">
-						<input type="submit" value="Employ" class="btn btn-success" />
+					<a asp-route-employeeId="@e.Id" asp-controller="Employment" asp-action="EmployeeEmployments">
+						<input type="submit" value="View employments" class="btn btn-success"/>
 					</a>
 				</td>
 				<td>

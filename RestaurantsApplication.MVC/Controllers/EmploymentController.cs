@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RestaurantsApplication.DTOs.EmploymentDTOs;
 using RestaurantsApplication.MVC.Models.Employment;
 using RestaurantsApplication.Services.Contracts;
