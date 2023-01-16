@@ -10,6 +10,7 @@ namespace RestaurantsApplication.Data.Entities
         [ForeignKey(nameof(LocationCode))]
         public Location Location { get; set; }
         public string Status { get; set; }
+        public string? FailMessage { get; set; }
         public IEnumerable<Record> Records { get; set; }
     }
 }
