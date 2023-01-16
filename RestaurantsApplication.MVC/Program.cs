@@ -20,6 +20,7 @@ builder.Services.AddScoped<ILocationService, LocationService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IEmploymentService, EmploymentService>();
 builder.Services.AddScoped<IValidatorService, ValidatorService>();
+builder.Services.AddScoped<ISubmitionService, SubmitionService>();
 
 
 var app = builder.Build();

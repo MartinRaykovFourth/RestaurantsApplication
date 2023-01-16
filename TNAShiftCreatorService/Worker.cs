@@ -28,20 +28,20 @@ namespace TNAShiftCreatorService
                     foreach (var req in requests)
                     {
                         bool isFailed = false;
-                        StringBuilder failMessage = new StringBuilder();
+                        var errorsDictionary = new Dictionary<string, int>();
 
                         if (req.Date > DateTime.Now.Date)
                         {
                             isFailed = true;
-                            failMessage.Append(DateIsLaterThanToday);
+                            errorsDictionary[DateIsLaterThanToday] = 1;
                         }
 
-                        ValidateRecords(req, ref isFailed, failMessage);
+                        ValidateRecords(req, ref isFailed, errorsDictionary);
 
                         if (isFailed)
                         {
                             req.Status = Failed;
-                            req.FailMessage = failMessage.ToString();
+                            SetFailMessage(req, errorsDictionary);
 
                             await _context.SaveChangesAsync();
 
@@ -83,7 +83,7 @@ namespace TNAShiftCreatorService
             return requests;
         }
 
-        private void ValidateRecords(Request req, ref bool isFailed, StringBuilder failMessage)
+        private void ValidateRecords(Request req, ref bool isFailed,Dictionary<string, int> errorsDictionary)
         {
             foreach (var rec in req.Records)
             {
@@ -96,21 +96,58 @@ namespace TNAShiftCreatorService
                 && e.IsDeleted == false))
                 {
                     isFailed = true;
-                    failMessage.Append(string.Format(EmployeeHasNoEmploymentInLocation, employee.Code, req.Location.Name));
+
+                    var error = string.Format(EmployeeHasNoEmploymentInLocation, employee.Code, req.Location.Name);
+                    ManageError(errorsDictionary, error);
                 }
 
                 if ((int)rec.ClockStatus < 0 || (int)rec.ClockStatus > 3)
                 {
                     isFailed = true;
-                    failMessage.Append(string.Format(ClockStatusNotValid, employee.Code, (int)rec.ClockStatus));
+
+                    var error = string.Format(ClockStatusNotValid, employee.Code, (int)rec.ClockStatus);
+                    ManageError(errorsDictionary, error);
                 }
 
                 if (rec.ClockValue.Date > DateTime.Now.Date)
                 {
                     isFailed = true;
-                    failMessage.Append(string.Format(ClockValueNotValid, employee.Code));
+
+                    var error = string.Format(ClockValueNotValid, employee.Code);
+                    ManageError(errorsDictionary, error);
                 }
             }
+        }
+
+        private static void ManageError(Dictionary<string, int> errorsDictionary, string error)
+        {
+            if (errorsDictionary.ContainsKey(error))
+            {
+                errorsDictionary[error]++;
+            }
+            else
+            {
+                errorsDictionary[error] = 1;
+            }
+        }
+
+        private void SetFailMessage(Request req, Dictionary<string, int> errorsDictionary)
+        {
+            var sb = new StringBuilder();
+
+            foreach (var error in errorsDictionary)
+            {
+                if (error.Value > 1)
+                {
+                    sb.AppendLine(error.Key + $"({error.Value})");
+                }
+                else
+                {
+                    sb.AppendLine(error.Key);
+                }
+            }
+
+            req.FailMessage = sb.ToString();
         }
 
         private async Task ManageShifts(Request req, List<Shift> shifts)

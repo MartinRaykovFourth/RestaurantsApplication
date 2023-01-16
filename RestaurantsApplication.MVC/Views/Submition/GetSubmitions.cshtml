@@ -1,0 +1,60 @@
+﻿@model IEnumerable<SubmitionShortInfoViewModel>
+
+<form method="get">
+	<input type="date" value="@ViewBag.Date" name="date"/>
+	<input type="submit" value="Search" class="btn btn-primary mb-3" />
+</form>
+@if (Model.Count() == 0)
+{
+	<h1>No submitions for this date!</h1>
+}
+else
+{
+	<table class="table table-light">
+		<thead>
+			<tr style="white-space: nowrap; text-align: center;">
+				<th scope="col"> Location code</th>
+				<th scope="col">Status</th>
+				<th scope="col">Fail message (optional)</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var s in Model)
+			{
+				<tr style="vertical-align: center;">
+					<td>
+						@s.LocationCode
+					</td>
+					@if (s.Status == "Processing")
+					{
+						<td style="color: deepskyblue">
+							@s.Status
+						</td>
+					}
+					else if (s.Status == "Completed")
+					{
+						<td style="color: green">
+							@s.Status
+						</td>
+					}
+					else if (s.Status == "Failed")
+					{
+						<td style="color: darkred">
+							@s.Status
+						</td>
+					}
+					else
+					{
+						<td>
+							@s.Status
+						</td>
+					}
+						<td>
+							@s.FailMessage
+						</td>
+					
+				</tr>
+			}
+		</tbody>
+	</table>
+}
