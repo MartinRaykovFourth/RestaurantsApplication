@@ -10,5 +10,6 @@ namespace RestaurantsApplication.Services.Contracts
         public Task<LocationWithCodeDTO> GetByIdAsync(int locationId);
         public Task EditAsync(LocationWithCodeDTO dto);
         public Task DeleteAsync(int locationId);
+        public Task<LocationShortInfoDTO> GetByCodeAsync(string code);
     }
 }

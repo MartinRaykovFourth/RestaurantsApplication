@@ -1,0 +1,39 @@
+﻿@model List<NotCompletedShiftViewModel>
+
+<form method="post">
+	<table class="table table-light">
+		<thead>
+			<tr style="text-align: center">
+				<th scope="col">Employee</th>
+				<th scope="col">Shift</th>
+				<th scope="col">Role</th>
+			</tr>
+		</thead>
+		<tbody>
+			@for (int i = 0; i < Model.Count(); i++)
+			{
+				<tr style="text-align: center">
+					<td>
+						@Model[i].EmployeeName
+					</td>
+					<td>
+						@Model[i].Start.TimeOfDay - @Model[i].End.TimeOfDay
+						<input asp-for="@Model[i].Start" value="@Model[i].Start" type="hidden" />
+					</td>
+					<td>
+						<select asp-for="@Model[i].RoleId">
+							@foreach (var role in Model[i].AvailableRoles)
+							{
+								<option value="@role.Id">@role.Name</option>
+							}
+						</select>
+					</td>
+				</tr>
+				<input asp-for="@Model[i].ShiftId" value="@Model[i].ShiftId" type="hidden" />
+				<input asp-for="@Model[i].LocationCode" value="@Model[i].LocationCode" type="hidden" />
+			}
+		</tbody>
+	</table>
+	<input type="submit" value="Apply" />
+</form>
+

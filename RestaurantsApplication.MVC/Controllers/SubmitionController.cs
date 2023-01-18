@@ -12,7 +12,7 @@ namespace RestaurantsApplication.MVC.Controllers
             _submitionService = submitionService;
         }
 
-        public async Task<IActionResult> GetSubmitions(DateTime? date)
+        public async Task<IActionResult> ViewAll(DateTime? date)
         {
             DateTime filterDate;
             if (!date.HasValue)

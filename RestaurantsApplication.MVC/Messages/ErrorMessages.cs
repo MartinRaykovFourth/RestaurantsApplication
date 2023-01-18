@@ -6,6 +6,7 @@
         public const string EmployeeLastNameRequiredError = "Last name is required";
         public const string EmployeeWrongCodeError = "Employee with this code doesn't exist!";
         public const string EmployeeAlreadyHasMainEmploymentError = "This employee already has a main employment!";
+        public const string EmployeeAlreadyHasEmploymentWithRole = "This employee already has an employment with that role in that department!";
 
         public const string LocationNameRequiredError = "Location name is required";
 

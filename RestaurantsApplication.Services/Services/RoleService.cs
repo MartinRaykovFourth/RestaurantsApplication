@@ -24,5 +24,20 @@ namespace RestaurantsApplication.Services.Services
                 })
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<RoleWithIdDTO>> GetAvailableRolesAsync(DateTime date, string employeeCode)
+        {
+            return await _context.Employments
+                .Where(e => e.Employee.Code == employeeCode
+                && e.StartDate.Date <= date.Date
+                && (e.EndDate.HasValue ? e.EndDate.Value.Date >= date.Date : true)
+                && e.IsDeleted == false)
+                .Select(e => new RoleWithIdDTO
+                {
+                    Id = e.RoleId,
+                    Name = e.Role.Name
+                })
+                .ToListAsync();
+        }
     }
 }

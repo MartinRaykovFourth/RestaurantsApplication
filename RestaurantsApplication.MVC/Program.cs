@@ -21,7 +21,7 @@ builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IEmploymentService, EmploymentService>();
 builder.Services.AddScoped<IValidatorService, ValidatorService>();
 builder.Services.AddScoped<ISubmitionService, SubmitionService>();
-
+builder.Services.AddScoped<IShiftService, ShiftService>();
 
 var app = builder.Build();
 

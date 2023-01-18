@@ -1,0 +1,73 @@
+﻿@model ShiftsWithLocationsViewModel
+
+<form method="get">
+	<input type="date" value="@ViewBag.Date" name="date" />
+	<select name="locationCode">
+		@foreach (var location in Model.Locations)
+		{
+			<option value="@location.Code">@location.Name</option>
+		}
+	</select>
+	<input type="submit" value="Select" class="btn-primary mb-3" />
+</form>
+
+@if (Model.NotCompletedShifts != null && Model.NotCompletedShifts.Count() > 0)
+{
+	<a asp-controller="Shift" asp-action="ManageNotCompletedShifts" asp-route-date="@ViewBag.Date" asp-route-locationCode="@ViewBag.LocationCode">
+		"Not completed tna shifts (@Model.NotCompletedShifts.Count())"
+	</a>
+}
+
+@if (Model.CompletedShifts == null && Model.NotCompletedShifts == null)
+{
+	<h1>Please select date and location!</h1>
+}
+else
+{
+	<table class="table table-light">
+		<thead>
+			<tr style="text-align: center">
+				<th scope="col">Employee</th>
+				<th scope="col">Shift</th>
+				<th scope="col">Hours worked</th>
+				<th scope="col">Cost</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var s in Model.CompletedShifts)
+			{
+				<tr style="text-align: center">
+					<td>
+						@s.EmployeeName
+					</td>
+					<td>
+						@s.Start.TimeOfDay - @s.End.TimeOfDay
+					</td>
+					<td>
+						@s.HoursWorked.Hours
+					</td>
+					<td>
+						@s.Cost
+					</td>
+				</tr>
+			}
+			@foreach (var s in Model.NotCompletedShifts)
+			{
+				<tr style="text-align: center">
+					<td>
+						@s.EmployeeName
+					</td>
+					<td>
+						@s.Start.TimeOfDay - @s.End.TimeOfDay
+					</td>
+					<td>
+						@s.HoursWorked.Hours
+					</td>
+					<td>
+						Shift is not complete!
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}

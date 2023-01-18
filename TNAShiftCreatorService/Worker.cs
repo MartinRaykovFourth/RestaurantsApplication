@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RestaurantsApplication.Data;
 using RestaurantsApplication.Data.Entities;
-using RestaurantsApplication.DTOs.Enums;
+using RestaurantsApplication.Data.Enums;
 using System.Text;
 using static TNAShiftCreatorService.Constants.FailMessages;
 using static TNAShiftCreatorService.Constants.RequestStatuses;

@@ -34,11 +34,21 @@ namespace RestaurantsApplication.Services.Services
         public async Task<bool> CanEmploymentBeMainAsync(int employeeId)
         {
             var employee = await _context.Employees 
-                .Include(e => e.Employments) // moje da gurmi tuka null
+                .Include(e => e.Employments) 
                 .Where(e => e.Id == employeeId)
-                .SingleOrDefaultAsync();
+                .SingleAsync();
 
             return !employee.Employments.Any(e => e.IsMain);
+        }
+
+        public async Task<bool> ValidateEmploymentRoleAsync(int roleId, int departmentId, int employeeId)
+        {
+            var employee = await _context.Employees
+                .Include(e => e.Employments)
+                .Where(e => e.Id == employeeId)
+                .SingleAsync();
+
+            return !employee.Employments.Any(e => e.RoleId == roleId && e.DepartmentId == departmentId);
         }
     }
 }

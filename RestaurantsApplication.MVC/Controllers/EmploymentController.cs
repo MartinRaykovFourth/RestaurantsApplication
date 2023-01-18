@@ -51,14 +51,18 @@ namespace RestaurantsApplication.MVC.Controllers
                 return View(model);
             }
 
+            bool isWrong = false;
+
             if (model.EndDate != null && model.EndDate < model.StartDate)
             {
                 ModelState.AddModelError(nameof(model.EndDate), EarlierEndDateMessage);
+                isWrong = true;
             }
 
             if (!await _validatorService.ValidateDepartmentAsync(model.DepartmentId, model.LocationId))
             {
                 ModelState.AddModelError(nameof(model.DepartmentId), DepartmentDoesntExistInLocationError);
+                isWrong = true;
             }
 
             model.EmployeeId = await _validatorService.ValidateEmployeeAsync(model.EmployeeCode);
@@ -73,6 +77,17 @@ namespace RestaurantsApplication.MVC.Controllers
             if (model.IsMain && !await _validatorService.CanEmploymentBeMainAsync(model.EmployeeId))
             {
                 ModelState.AddModelError(nameof(model.IsMain), EmployeeAlreadyHasMainEmploymentError);
+                isWrong = true;
+            }
+
+            if (!await _validatorService.ValidateEmploymentRoleAsync(model.RoleId, model.DepartmentId, model.EmployeeId))
+            {
+                ModelState.AddModelError(nameof(model.RoleId), EmployeeAlreadyHasEmploymentWithRole);
+                isWrong = true;
+            }
+
+            if (isWrong)
+            {
                 await MapCollections(model);
                 return View(model);
             }

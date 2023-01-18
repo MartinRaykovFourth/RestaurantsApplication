@@ -96,5 +96,17 @@ namespace RestaurantsApplication.Services.Services
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<LocationShortInfoDTO> GetByCodeAsync(string code) // moje bi nqma da ti trqbva
+        {
+            return await _context.Locations
+                .Where(l => l.Code == code && l.IsDeleted == false)
+                .Select(l => new LocationShortInfoDTO
+                {
+                    Name = l.Name,
+                    Code = l.Code
+                })
+                .SingleAsync();
+        }
     }
 }

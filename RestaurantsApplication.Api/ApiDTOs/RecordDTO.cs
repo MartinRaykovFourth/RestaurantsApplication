@@ -1,4 +1,4 @@
-﻿using RestaurantsApplication.DTOs.Enums;
+﻿using RestaurantsApplication.Data.Enums;
 
 namespace RestaurantsApplication.Api.ApiDTOs
 {

@@ -1,4 +1,4 @@
-﻿using RestaurantsApplication.DTOs.Enums;
+﻿using RestaurantsApplication.Data.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RestaurantsApplication.Data.Entities
