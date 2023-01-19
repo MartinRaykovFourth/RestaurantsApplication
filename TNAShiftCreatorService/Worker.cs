@@ -83,7 +83,7 @@ namespace TNAShiftCreatorService
             return requests;
         }
 
-        private void ValidateRecords(Request req, ref bool isFailed,Dictionary<string, int> errorsDictionary)
+        private void ValidateRecords(Request req, ref bool isFailed, Dictionary<string, int> errorsDictionary)
         {
             foreach (var rec in req.Records)
             {
@@ -109,7 +109,7 @@ namespace TNAShiftCreatorService
                     ManageError(errorsDictionary, error);
                 }
 
-                if (rec.ClockValue.Date > DateTime.Now.Date)
+                if (rec.ClockValue.Date > req.Date.Date)
                 {
                     isFailed = true;
 
@@ -154,21 +154,92 @@ namespace TNAShiftCreatorService
         {
             foreach (var rec in req.Records)
             {
-                var shift = await _context.Shifts
+                //tuk shte proverish dali go ima i v  shiftovete
+                var databaseShifts = await _context.Shifts
                     .Where(s =>
                     s.Employee.Code == rec.EmployeeCode
                     && s.Start.Value.Date == req.Date)
-                    .SingleOrDefaultAsync();
+                    .ToListAsync();
 
-                if (shift != null)
+                if (databaseShifts.Count > 0)
                 {
-                    if (rec.ClockStatus == ClockStatus.BreakStart && !shift.BreakStart.HasValue)
+                    switch (rec.ClockStatus)
                     {
-                        shift.BreakStart = rec.ClockValue;
-                    }
-                    else if (rec.ClockStatus == ClockStatus.BreakEnd && !shift.BreakEnd.HasValue)
-                    {
-                        shift.BreakEnd = rec.ClockValue;
+                        case ClockStatus.ClockIn:
+
+                            if (databaseShifts.Any(s => s.Start.Value == rec.ClockValue) == false) // pak nema kak pri overlap
+                            {
+                                await ManageClockStatusOrCreateShift(req, rec, shifts, ClockStatus.ClockIn);
+                            }
+                            break;
+
+                        case ClockStatus.ClockOut:
+
+                            if (databaseShifts.Any(s => s.End.Value == rec.ClockValue) == false)
+                            {
+                                await ManageClockStatusOrCreateShift(req, rec, shifts, ClockStatus.ClockOut);
+                            }
+                            break;
+
+                        case ClockStatus.BreakStart: // problem pri overlap
+
+                            var existingShift = databaseShifts
+                               .Where(s =>
+                               s.BreakStart.HasValue == false
+                               && s.Start.Value <= rec.ClockValue && s.End.Value >= rec.ClockValue)
+                               .FirstOrDefault();
+
+                            if (databaseShifts.Any(s => s.BreakStart.HasValue 
+                            && s.BreakStart.Value == rec.ClockValue))
+                            {
+                                if (existingShift != null)
+                                {
+                                    existingShift.BreakStart = rec.ClockValue;
+                                }
+
+                                break;
+                            }
+
+                            if (existingShift != null)
+                            {
+                                existingShift.BreakStart = rec.ClockValue;
+                                break;
+                            }
+                            else
+                            {
+                                await ManageClockStatusOrCreateShift(req, rec, shifts, ClockStatus.BreakStart);
+                            }
+                            break;
+
+                        case ClockStatus.BreakEnd:
+
+                            var existingShift2 = databaseShifts
+                               .Where(s =>
+                               s.BreakEnd.HasValue == false
+                               && s.Start.Value <= rec.ClockValue && s.End.Value >= rec.ClockValue)
+                               .FirstOrDefault();
+
+                            if (databaseShifts.Any(s => s.BreakEnd.HasValue // nqma kak da znam overlap li e ili povtorenie??? 
+                            && s.BreakEnd.Value == rec.ClockValue))
+                            {
+                                if (existingShift2 != null)
+                                {
+                                    existingShift2.BreakEnd = rec.ClockValue;
+                                }
+
+                                break;
+                            }
+
+                            if (existingShift2 != null)
+                            {
+                                existingShift2.BreakEnd = rec.ClockValue;
+                                break;
+                            }
+                            else
+                            {
+                                await ManageClockStatusOrCreateShift(req, rec, shifts, ClockStatus.BreakEnd);
+                            }
+                            break;
                     }
                 }
                 else if (shifts.Any(s => s.Employee.Code == rec.EmployeeCode))
@@ -252,5 +323,47 @@ namespace TNAShiftCreatorService
             return newShift;
         }
 
+        private async Task ManageClockStatusOrCreateShift(Request req, Record rec, List<Shift> shifts, ClockStatus clockStatus)
+        {
+            var existingShift = shifts
+                .Where(s => s.Employee.Code == rec.EmployeeCode)
+                .SingleOrDefault();
+
+            if (existingShift != null)
+            {
+                switch (clockStatus)
+                {
+                    case ClockStatus.ClockIn:
+                        if (existingShift.Start.HasValue == false)
+                        {
+                            existingShift.Start = rec.ClockValue;
+                        }
+                        break;
+                    case ClockStatus.BreakStart:
+                        if (existingShift.BreakStart.HasValue == false)
+                        {
+                            existingShift.BreakStart = rec.ClockValue;
+                        }
+                        break;
+                    case ClockStatus.BreakEnd:
+                        if (existingShift.BreakEnd.HasValue == false)
+                        {
+                            existingShift.BreakEnd = rec.ClockValue;
+                        }
+                        break;
+                    case ClockStatus.ClockOut:
+                        if (existingShift.End.HasValue == false)
+                        {
+                            existingShift.End = rec.ClockValue;
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                Shift newShift = await CreateNewShift(req, rec);
+                shifts.Add(newShift);
+            }
+        }
     }
 }

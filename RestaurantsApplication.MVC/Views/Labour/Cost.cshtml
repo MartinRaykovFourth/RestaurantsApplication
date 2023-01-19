@@ -1,0 +1,60 @@
+﻿@model LabourCostPerDayViewModel
+
+<form method="get">
+	<input type="date" value="@ViewBag.Date" name="date" />
+	<select name="locationCode">
+		@foreach (var location in Model.Locations)
+		{
+			<option value="@location.Code">@location.Name</option>
+		}
+	</select>
+	<input type="submit" value="Select" class="btn-primary mb-3" />
+</form>
+
+@if (Model.Employees == null)
+{
+	<h1>Please select date and location!</h1>
+}
+else
+{
+	<table class="table table-light">
+		<thead>
+			<tr style="text-align: center">
+				<th scope="col">Employee</th>
+				<th scope="col">Cost</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var e in Model.Employees)
+			{
+				<tr style="text-align: center">
+					<td>
+						@e.Name
+					</td>
+					<td>
+						@if (e.Cost != null)
+						{
+							<p>@e.Cost</p>
+						}
+						else
+						{
+							<p>Shift is not completed!</p>
+						}
+					</td>
+				</tr>
+			}
+			<tr style="text-align: center">
+				<th scope="col">Total</th>
+				<td>
+					@Model.Total
+				</td>
+			</tr>
+			<tr style="text-align: center">
+				<th scope="col">Week total</th>
+				<td>
+					@Model.WeeklyCost
+				</td>
+			</tr>
+		</tbody>
+	</table>
+}

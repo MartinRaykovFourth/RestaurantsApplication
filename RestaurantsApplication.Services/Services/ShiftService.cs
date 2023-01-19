@@ -16,47 +16,9 @@ namespace RestaurantsApplication.Services.Services
 
         public async Task<IEnumerable<ShiftShortInfoDTO>> GetByDateAndLocationAsync(DateTime date, string locationCode)
         {
-            var shifts = await _context.Shifts
-                .Where(s => s.Employee.Employments.Any(e =>
-                e.StartDate.Date <= date.Date
-                && (e.EndDate.HasValue ? e.EndDate.Value.Date >= date.Date : true)
-                && e.Department.Location.Code == locationCode
-                && e.IsDeleted == false)
-                && s.Start.Value.Date == date.Date)
-                .Select(s => new ShiftWithEmployeeDTO
-                {
-                    EmployeeName = s.Employee.FirstName + " " + s.Employee.LastName,
-                    Start = s.Start.Value,
-                    End = s.End.Value,
-                    BreakStart = s.BreakStart.HasValue? s.BreakStart.Value : null,
-                    BreakEnd = s.BreakEnd.HasValue? s.BreakEnd.Value : null,
-                    RoleId = s.RoleId,
-                    DepartmentId = s.DepartmentId,
-                    Employee = s.Employee
-                })
-                .ToListAsync();
+            List<ShiftWithEmployeeDTO> shifts = await GetShifts(date, locationCode);
 
-            foreach (var shift in shifts)
-            {
-                shift.HoursWorked = shift.BreakStart.HasValue && shift.BreakEnd.HasValue ?
-                    shift.End.TimeOfDay - shift.Start.TimeOfDay
-                    -
-                    (shift.BreakEnd.Value.TimeOfDay - shift.BreakStart.Value.TimeOfDay) :
-                    shift.End.TimeOfDay - shift.Start.TimeOfDay;
-
-                if (shift.RoleId != null && shift.DepartmentId != null)
-                {
-                    var rate = _context.Employments
-                    .Where(e => 
-                    e.EmployeeId == shift.Employee.Id
-                    && e.RoleId == shift.RoleId
-                    && e.DepartmentId == shift.DepartmentId)
-                    .Select(e => e.Rate)
-                    .Single();
-
-                    shift.Cost = rate * shift.HoursWorked.Hours;
-                }
-            }
+            CalculateHoursWorkedAndCost(shifts);
 
             return shifts.Select(s => new ShiftShortInfoDTO
             {
@@ -112,5 +74,66 @@ namespace RestaurantsApplication.Services.Services
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<decimal?>> GetEmployeesCostsByDateAsync(DateTime date, string locationCode)
+        {
+            List<ShiftWithEmployeeDTO> shifts = await GetShifts(date, locationCode);
+
+            CalculateHoursWorkedAndCost(shifts);
+
+            return shifts
+                .Where(s => s.Cost != null)
+                .Select(s => s.Cost);
+
+        }
+
+        private async Task<List<ShiftWithEmployeeDTO>> GetShifts(DateTime date, string locationCode)
+        {
+            return await _context.Shifts
+                .Where(s => s.Employee.Employments.Any(e =>
+                e.StartDate.Date <= date.Date
+                && (e.EndDate.HasValue ? e.EndDate.Value.Date >= date.Date : true)
+                && e.Department.Location.Code == locationCode
+                && e.IsDeleted == false)
+                && s.Start.Value.Date == date.Date)
+                .Select(s => new ShiftWithEmployeeDTO
+                {
+                    EmployeeName = s.Employee.FirstName + " " + s.Employee.LastName,
+                    Start = s.Start.Value,
+                    End = s.End.Value,
+                    BreakStart = s.BreakStart.HasValue ? s.BreakStart.Value : null,
+                    BreakEnd = s.BreakEnd.HasValue ? s.BreakEnd.Value : null,
+                    RoleId = s.RoleId,
+                    DepartmentId = s.DepartmentId,
+                    Employee = s.Employee
+                })
+                .ToListAsync();
+        }
+
+        private void CalculateHoursWorkedAndCost(List<ShiftWithEmployeeDTO> shifts)
+        {
+            foreach (var shift in shifts)
+            {
+                shift.HoursWorked = shift.BreakStart.HasValue && shift.BreakEnd.HasValue ?
+                    shift.End.TimeOfDay - shift.Start.TimeOfDay
+                    -
+                    (shift.BreakEnd.Value.TimeOfDay - shift.BreakStart.Value.TimeOfDay) :
+                    shift.End.TimeOfDay - shift.Start.TimeOfDay;
+
+                if (shift.RoleId != null && shift.DepartmentId != null)
+                {
+                    var rate = _context.Employments
+                    .Where(e =>
+                    e.EmployeeId == shift.Employee.Id
+                    && e.RoleId == shift.RoleId
+                    && e.DepartmentId == shift.DepartmentId)
+                    .Select(e => e.Rate)
+                    .Single();
+
+                    shift.Cost = rate * shift.HoursWorked.Hours;
+                }
+            }
+        }
+
     }
 }
