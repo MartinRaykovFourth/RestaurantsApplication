@@ -55,7 +55,7 @@ namespace RestaurantsApplication.MVC.Controllers
 
             if (model.EndDate != null && model.EndDate < model.StartDate)
             {
-                ModelState.AddModelError(nameof(model.EndDate), EarlierEndDateMessage);
+                ModelState.AddModelError(nameof(model.EndDate), EarlierEndDateError);
                 isWrong = true;
             }
 
@@ -82,7 +82,7 @@ namespace RestaurantsApplication.MVC.Controllers
 
             if (!await _validatorService.ValidateEmploymentRoleAsync(model.RoleId, model.DepartmentId, model.EmployeeId))
             {
-                ModelState.AddModelError(nameof(model.RoleId), EmployeeAlreadyHasEmploymentWithRole);
+                ModelState.AddModelError(nameof(model.RoleId), EmployeeAlreadyHasEmploymentWithRoleError);
                 isWrong = true;
             }
 
@@ -155,7 +155,7 @@ namespace RestaurantsApplication.MVC.Controllers
 
             if (model.EndDate != null && model.EndDate < model.StartDate)
             {
-                ModelState.AddModelError(nameof(model.EndDate), EarlierEndDateMessage);
+                ModelState.AddModelError(nameof(model.EndDate), EarlierEndDateError);
             }
 
             if (!await _validatorService.ValidateDepartmentAsync(model.DepartmentId, model.LocationId))
@@ -185,7 +185,7 @@ namespace RestaurantsApplication.MVC.Controllers
 
             if (employeeId == -1)
             {
-                TempData["error"] = CantDeleteMainEmployment;
+                TempData["error"] = CantDeleteMainEmploymentError;
                 return Redirect(Request.GetTypedHeaders().Referer.ToString());
             }
             return RedirectToAction(nameof(EmployeeEmployments), new { employeeId = employeeId });

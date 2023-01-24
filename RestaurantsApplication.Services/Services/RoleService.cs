@@ -25,7 +25,7 @@ namespace RestaurantsApplication.Services.Services
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<RoleWithIdDTO>> GetAvailableRolesAsync(DateTime date, string employeeCode)
+        public async Task<List<RoleWithIdDTO>> GetAvailableRolesAsync(DateTime date, string employeeCode)
         {
             return await _context.Employments
                 .Where(e => e.Employee.Code == employeeCode

@@ -1,39 +1,132 @@
-﻿@model List<NotCompletedShiftViewModel>
+﻿@model ManageShiftsViewModel
 
 <form method="post">
-	<table class="table table-light">
-		<thead>
-			<tr style="text-align: center">
-				<th scope="col">Employee</th>
-				<th scope="col">Shift</th>
-				<th scope="col">Role</th>
-			</tr>
-		</thead>
-		<tbody>
-			@for (int i = 0; i < Model.Count(); i++)
-			{
-				<tr style="text-align: center">
-					<td>
-						@Model[i].EmployeeName
-					</td>
-					<td>
-						@Model[i].Start.TimeOfDay - @Model[i].End.TimeOfDay
-						<input asp-for="@Model[i].Start" value="@Model[i].Start" type="hidden" />
-					</td>
-					<td>
-						<select asp-for="@Model[i].RoleId">
-							@foreach (var role in Model[i].AvailableRoles)
-							{
-								<option value="@role.Id">@role.Name</option>
-							}
-						</select>
-					</td>
+	@if (Model.NotCompletedShifts.Count > 0)
+	{
+		<table class="table table-light">
+			<thead>
+				<tr style="text-align: center" class="table-dark">
+					<th colspan="3">Not completed shifts</th>
 				</tr>
-				<input asp-for="@Model[i].ShiftId" value="@Model[i].ShiftId" type="hidden" />
-				<input asp-for="@Model[i].LocationCode" value="@Model[i].LocationCode" type="hidden" />
-			}
-		</tbody>
-	</table>
-	<input type="submit" value="Apply" />
+				<tr style="text-align: center">
+					<th scope="col">Employee</th>
+					<th scope="col">Shift</th>
+					<th scope="col">Role</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (int i = 0; i < Model.NotCompletedShifts.Count(); i++)
+				{
+					<tr style="text-align: center">
+						<td>
+							@Model.NotCompletedShifts[i].EmployeeName
+							<input asp-for="@Model.NotCompletedShifts[i].EmployeeName" value="@Model.NotCompletedShifts[i].EmployeeName" type="hidden" />
+							<input asp-for="@Model.NotCompletedShifts[i].EmployeeCode" value="@Model.NotCompletedShifts[i].EmployeeCode" type="hidden" />
+						</td>
+						<td>
+							@Model.NotCompletedShifts[i].Start.TimeOfDay - @Model.NotCompletedShifts[i].End.TimeOfDay
+						</td>
+						<td>
+							<select asp-for="@Model.NotCompletedShifts[i].RoleId">
+								@foreach (var role in Model.NotCompletedShifts[i].AvailableRoles)
+								{
+									<option value="@role.Id">@role.Name</option>
+								}
+							</select>
+						</td>
+					</tr>
+					<input asp-for="@Model.NotCompletedShifts[i].ShiftId" value="@Model.NotCompletedShifts[i].ShiftId" type="hidden" />
+				}
+			</tbody>
+		</table>
+	}
+
+	@if (Model.OverlappedShifts.Count > 0)
+	{
+		<table class="table table-light">
+			<thead>
+				<tr style="text-align: center" class="table-dark">
+					<th colspan="7">Overlapped shifts</th>
+				</tr>
+				<tr style="text-align: center">
+					<th scope="col">Employee</th>
+					<th scope="col">Start</th>
+					<th scope="col">Break start</th>
+					<th scope="col">Break end</th>
+					<th scope="col">End</th>
+					<th scope="col">Role</th>
+					<th scope="col">Remove</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (int i = 0; i < Model.OverlappedShifts.Count(); i++)
+				{
+					<tr style="text-align: center">
+						<td>
+							@Model.OverlappedShifts[i].EmployeeName
+							<input type="hidden" asp-for="@Model.OverlappedShifts[i].EmployeeName" value="@Model.OverlappedShifts[i].EmployeeName" />
+							<input type="hidden" asp-for="@Model.OverlappedShifts[i].EmployeeCode" value="@Model.OverlappedShifts[i].EmployeeCode" />
+						</td>
+						<td>
+							<input asp-for="@Model.OverlappedShifts[i].Start" value="@Model.OverlappedShifts[i].Start" type="datetime" />
+							<br />
+							<span asp-validation-for="@Model.OverlappedShifts[i].Start" class="text-danger"></span>
+						</td>
+						<td>
+							<input asp-for="@Model.OverlappedShifts[i].BreakStart" value="@(Model.OverlappedShifts[i].BreakStart.HasValue ?
+						Model.OverlappedShifts[i].BreakStart : null)" type="datetime" />
+							<br />
+							<span asp-validation-for="@Model.OverlappedShifts[i].BreakStart" class="text-danger"></span>
+						</td>
+						<td>
+							<input asp-for="@Model.OverlappedShifts[i].BreakEnd" value="@(Model.OverlappedShifts[i].BreakEnd.HasValue ?
+						Model.OverlappedShifts[i].BreakEnd : null)" type="datetime" />
+							<br />
+							<span asp-validation-for="@Model.OverlappedShifts[i].BreakEnd" class="text-danger"></span>
+						</td>
+						<td>
+							<input asp-for="@Model.OverlappedShifts[i].End" value="@Model.OverlappedShifts[i].End" type="datetime" />
+							<br />
+							<span asp-validation-for="@Model.OverlappedShifts[i].End" class="text-danger"></span>
+						</td>
+						@if (Model.OverlappedShifts[i].AvailableRoles.Count() == 1)
+						{
+							<td>
+								@Model.OverlappedShifts[i].AvailableRoles[0].Name
+								<input type="hidden" asp-for="@Model.OverlappedShifts[i].RoleId" value="@Model.OverlappedShifts[i].RoleId" />
+							</td>
+						}
+						else
+						{
+							<td>
+								<select asp-for="@Model.OverlappedShifts[i].RoleId">
+									@foreach (var role in Model.OverlappedShifts[i].AvailableRoles)
+									{
+										<option value="@role.Id">
+											@role.Name
+										</option>
+									}
+								</select>
+							</td>
+						}
+						<td>
+							For removal
+							<input asp-for="@Model.OverlappedShifts[i].ForRemoval" type="checkbox" />
+						</td>
+					</tr>
+					<input asp-for="@Model.OverlappedShifts[i].ShiftId" value="@Model.OverlappedShifts[i].ShiftId" type="hidden" />
+					<input asp-for="@Model.OverlappedShifts[i].AvailableRoles" value="@Model.OverlappedShifts[i].AvailableRoles.ToList()" type="hidden" />
+				}
+			</tbody>
+		</table>
+		<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+	}
+	<input asp-for="@Model.LocationCode" value="@Model.LocationCode" type="hidden" />
+	<input asp-for="@Model.Date" value="@Model.Date" type="hidden" />
+
+	<input class="btn btn-success" type="submit" value="Apply" />
 </form>
 
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

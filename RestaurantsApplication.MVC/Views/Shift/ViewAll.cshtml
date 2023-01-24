@@ -11,16 +11,20 @@
 	<input type="submit" value="Select" class="btn-primary mb-3" />
 </form>
 
-@if (Model.NotCompletedShifts != null && Model.NotCompletedShifts.Count() > 0)
+@if (Model.NotCompletedShifts != null && Model.NotCompletedCount > 0)
 {
 	<a asp-controller="Shift" asp-action="ManageNotCompletedShifts" asp-route-date="@ViewBag.Date" asp-route-locationCode="@ViewBag.LocationCode">
-		"Not completed tna shifts (@Model.NotCompletedShifts.Count())"
+		Not completed tna shifts (@Model.NotCompletedCount)
 	</a>
 }
 
 @if (Model.CompletedShifts == null && Model.NotCompletedShifts == null)
 {
 	<h1>Please select date and location!</h1>
+}
+else if (Model.CompletedShifts.Count() == 0 && Model.NotCompletedShifts.Count() == 0)
+{
+	<h1>There are no shifts for this date!</h1>
 }
 else
 {
@@ -34,7 +38,7 @@ else
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (var s in Model.CompletedShifts)
+			@foreach (var s in Model.CompletedShifts!)
 			{
 				<tr style="text-align: center">
 					<td>
@@ -47,11 +51,30 @@ else
 						@s.HoursWorked.Hours
 					</td>
 					<td>
-						@s.Cost
+						@if (Model.CompletedShifts
+								.Any(cs => cs.EmployeeName == s.EmployeeName
+									&& s.ShiftId != cs.ShiftId
+									&& ((cs.Start.TimeOfDay <= s.Start.TimeOfDay 
+									&& cs.End.TimeOfDay <= s.End.TimeOfDay 
+									&& s.Start.TimeOfDay < cs.End.TimeOfDay) 
+									|| (cs.Start.TimeOfDay >= s.Start.TimeOfDay && cs.End.TimeOfDay <= s.End.TimeOfDay)
+									|| (cs.Start.TimeOfDay <= s.Start.TimeOfDay && cs.End.TimeOfDay >= s.End.TimeOfDay)
+									|| (cs.Start.TimeOfDay >= s.Start.TimeOfDay 
+									&& cs.End.TimeOfDay >= s.End.TimeOfDay
+									&& cs.Start.TimeOfDay < s.End.TimeOfDay)
+									))
+							)
+						{
+							@s.Cost <span style="color: red">(Overlapped)</span>
+						}
+						else
+						{
+							@s.Cost
+						}
 					</td>
 				</tr>
 			}
-			@foreach (var s in Model.NotCompletedShifts)
+			@foreach (var s in Model.NotCompletedShifts!)
 			{
 				<tr style="text-align: center">
 					<td>
@@ -64,7 +87,26 @@ else
 						@s.HoursWorked.Hours
 					</td>
 					<td>
-						Shift is not complete!
+						@if (Model.NotCompletedShifts
+								.Any(ncs => ncs.EmployeeName == s.EmployeeName
+								&& s.ShiftId != ncs.ShiftId
+								&& ((ncs.Start.TimeOfDay <= s.Start.TimeOfDay
+								&& ncs.End.TimeOfDay <= s.End.TimeOfDay
+								&& s.Start.TimeOfDay < ncs.End.TimeOfDay)
+								|| (ncs.Start.TimeOfDay >= s.Start.TimeOfDay && ncs.End.TimeOfDay <= s.End.TimeOfDay)
+								|| (ncs.Start.TimeOfDay <= s.Start.TimeOfDay && ncs.End.TimeOfDay >= s.End.TimeOfDay)
+								|| (ncs.Start.TimeOfDay >= s.Start.TimeOfDay
+								&& ncs.End.TimeOfDay >= s.End.TimeOfDay
+								&& ncs.Start.TimeOfDay < s.End.TimeOfDay)
+								))
+								)
+						{
+							<p>Shift is not complete! <span style="color: red">(Overlapped)</span></p>
+						}
+						else
+						{
+							<p>Shift is not complete!</p>
+						}
 					</td>
 				</tr>
 			}

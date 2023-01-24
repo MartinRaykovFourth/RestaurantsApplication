@@ -5,6 +5,6 @@ namespace RestaurantsApplication.Services.Contracts
     public interface IRoleService
     {
         public Task<IEnumerable<RoleWithIdDTO>> GetRolesWithIdsAsync();
-        public Task<IEnumerable<RoleWithIdDTO>> GetAvailableRolesAsync(DateTime date, string employeeCode);
+        public Task<List<RoleWithIdDTO>> GetAvailableRolesAsync(DateTime date, string employeeCode);
     }
 }

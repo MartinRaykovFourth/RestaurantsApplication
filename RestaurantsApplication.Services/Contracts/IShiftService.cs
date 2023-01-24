@@ -8,5 +8,8 @@ namespace RestaurantsApplication.Services.Contracts
         public Task<IEnumerable<ShiftWithIdDTO>> GetNotCompletedShiftsAsync(DateTime date, string locationCode);
         public Task ApplyRoleAsync(int shiftId, int roleId, string locationCode);
         public Task<IEnumerable<decimal?>> GetEmployeesCostsByDateAsync(DateTime date, string locationCode);
+        public Task<IEnumerable<OverlappedShiftDTO>> GetOverlappedShiftsAsync(DateTime date, string locationCode);
+        public Task RemoveShiftAsync(int shiftId);
+        public Task ResolveOverlappedShiftsAsync(IEnumerable<OverlappedShiftDTO> shifts);
     }
 }
