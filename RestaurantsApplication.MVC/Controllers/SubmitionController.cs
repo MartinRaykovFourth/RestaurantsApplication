@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestaurantsApplication.MVC.Models.Submition;
 using RestaurantsApplication.Services.Contracts;
+using static RestaurantsApplication.MVC.Messages.ProcessErrorMessages;
 
 namespace RestaurantsApplication.MVC.Controllers
 {
@@ -14,30 +15,38 @@ namespace RestaurantsApplication.MVC.Controllers
 
         public async Task<IActionResult> ViewAll(DateTime? date)
         {
-            DateTime filterDate;
-            if (!date.HasValue)
+            try
             {
-                filterDate = DateTime.Now.Date;
+                DateTime filterDate;
+                if (!date.HasValue)
+                {
+                    filterDate = DateTime.Now.Date;
+                }
+                else
+                {
+                    filterDate = date.Value.Date;
+                }
+
+                ViewBag.Date = filterDate.Date.ToString("yyyy-MM-dd");
+
+                var dtos = await _submitionService.GetRequestsByDate(filterDate);
+
+                var models = dtos
+                    .Select(d => new SubmitionShortInfoViewModel
+                    {
+                        Date = d.Date,
+                        FailMessage = d.FailMessage,
+                        LocationCode = d.LocationCode,
+                        Status = d.Status
+                    });
+
+                return View(models);
             }
-            else
+            catch (Exception)
             {
-                filterDate = date.Value.Date;
+                return RedirectToAction("Error", "Home", new { message = RetrievingSubmitionsError });
             }
 
-            ViewBag.Date = filterDate.Date.ToString("yyyy-MM-dd");
-
-            var dtos = await _submitionService.GetRequestsByDate(filterDate);
-
-            var models = dtos
-                .Select(d => new SubmitionShortInfoViewModel
-            {
-                Date = d.Date,
-                FailMessage = d.FailMessage,
-                LocationCode = d.LocationCode,
-                Status = d.Status
-            });
-
-            return View(models);
         }
     }
 }

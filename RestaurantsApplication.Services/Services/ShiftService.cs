@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RestaurantsApplication.Data;
-using RestaurantsApplication.Data.Entities;
 using RestaurantsApplication.DTOs.ShiftDTOs;
 using RestaurantsApplication.Services.Contracts;
 
@@ -157,10 +156,10 @@ namespace RestaurantsApplication.Services.Services
             return await _context.Shifts
                .Where(s => s.Start.Value.Date == date.Date
                && s.Employee.Employments
-               .Any(e => e.StartDate.Date <= date.Date
-                   && (e.EndDate.HasValue ? e.EndDate.Value.Date >= date.Date : true)
-                   && e.Department.Location.Code == locationCode
-                   && e.IsDeleted == false))
+                   .Any(e => e.StartDate.Date <= date.Date
+                       && (e.EndDate.HasValue ? e.EndDate.Value.Date >= date.Date : true)
+                       && e.Department.Location.Code == locationCode
+                       && e.IsDeleted == false))
                 .Select(s => new ShiftWithEmployeeDTO
                 {
                     ShiftId = s.Id,

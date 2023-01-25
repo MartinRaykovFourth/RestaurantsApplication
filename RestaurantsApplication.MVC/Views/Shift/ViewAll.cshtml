@@ -89,17 +89,17 @@ else
 					<td>
 						@if (Model.NotCompletedShifts
 								.Any(ncs => ncs.EmployeeName == s.EmployeeName
-								&& s.ShiftId != ncs.ShiftId
-								&& ((ncs.Start.TimeOfDay <= s.Start.TimeOfDay
-								&& ncs.End.TimeOfDay <= s.End.TimeOfDay
-								&& s.Start.TimeOfDay < ncs.End.TimeOfDay)
-								|| (ncs.Start.TimeOfDay >= s.Start.TimeOfDay && ncs.End.TimeOfDay <= s.End.TimeOfDay)
-								|| (ncs.Start.TimeOfDay <= s.Start.TimeOfDay && ncs.End.TimeOfDay >= s.End.TimeOfDay)
-								|| (ncs.Start.TimeOfDay >= s.Start.TimeOfDay
-								&& ncs.End.TimeOfDay >= s.End.TimeOfDay
-								&& ncs.Start.TimeOfDay < s.End.TimeOfDay)
-								))
-								)
+									&& s.ShiftId != ncs.ShiftId
+									&& ((ncs.Start.TimeOfDay <= s.Start.TimeOfDay
+									&& ncs.End.TimeOfDay <= s.End.TimeOfDay
+									&& s.Start.TimeOfDay < ncs.End.TimeOfDay)
+									|| (ncs.Start.TimeOfDay >= s.Start.TimeOfDay && ncs.End.TimeOfDay <= s.End.TimeOfDay)
+									|| (ncs.Start.TimeOfDay <= s.Start.TimeOfDay && ncs.End.TimeOfDay >= s.End.TimeOfDay)
+									|| (ncs.Start.TimeOfDay >= s.Start.TimeOfDay
+									&& ncs.End.TimeOfDay >= s.End.TimeOfDay
+									&& ncs.Start.TimeOfDay < s.End.TimeOfDay)
+									))
+							)
 						{
 							<p>Shift is not complete! <span style="color: red">(Overlapped)</span></p>
 						}

@@ -2,6 +2,7 @@
 using RestaurantsApplication.MVC.Models.Labour;
 using RestaurantsApplication.MVC.Models.Location;
 using RestaurantsApplication.Services.Contracts;
+using static RestaurantsApplication.MVC.Messages.ProcessErrorMessages;
 
 namespace RestaurantsApplication.MVC.Controllers
 {
@@ -18,47 +19,55 @@ namespace RestaurantsApplication.MVC.Controllers
 
         public async Task<IActionResult> Cost(string locationCode, DateTime? date)
         {
-            DateTime filterDate;
-            if (date.HasValue)
+            try
             {
-                filterDate = date.Value;
-            }
-            else
-            {
-                filterDate = DateTime.Now.Date;
-            }
-
-            ViewBag.Date = filterDate.Date.ToString("yyyy-MM-dd");
-
-            var locationDTOs = await _locationService.GetAllAsync();
-
-            var locationModels = locationDTOs
-                .Select(d => new LocationShortInfoViewModel
+                DateTime filterDate;
+                if (date.HasValue)
                 {
-                    Name = d.Name,
-                    Code = d.Code
-                });
-
-            if (string.IsNullOrEmpty(locationCode))
-            {
-                var modelWithLocations = new LabourCostPerDayViewModel
+                    filterDate = date.Value;
+                }
+                else
                 {
+                    filterDate = DateTime.Now.Date;
+                }
+
+                ViewBag.Date = filterDate.Date.ToString("yyyy-MM-dd");
+
+                var locationDTOs = await _locationService.GetAllAsync();
+
+                var locationModels = locationDTOs
+                    .Select(d => new LocationShortInfoViewModel
+                    {
+                        Name = d.Name,
+                        Code = d.Code
+                    });
+
+                if (string.IsNullOrEmpty(locationCode))
+                {
+                    var modelWithLocations = new LabourCostPerDayViewModel
+                    {
+                        Locations = locationModels
+                    };
+                    return View(modelWithLocations);
+                }
+
+                var dto = await _labourService.GetLabourCostAsync(filterDate, locationCode);
+
+                var model = new LabourCostPerDayViewModel
+                {
+                    Employees = dto.Employees,
+                    Total = dto.Total,
+                    WeeklyCost = dto.WeeklyCost,
                     Locations = locationModels
                 };
-                return View(modelWithLocations);
+
+                return View(model);
             }
-
-            var dto = await _labourService.GetLabourCostAsync(filterDate, locationCode);
-
-            var model = new LabourCostPerDayViewModel
+            catch (Exception)
             {
-                Employees = dto.Employees,
-                Total = dto.Total,
-                WeeklyCost = dto.WeeklyCost,
-                Locations = locationModels
-            };
-
-            return View(model);
+                return RedirectToAction("Error", "Home", new { message = RetrievingCostsError });
+            }
+            
         }
     }
 }

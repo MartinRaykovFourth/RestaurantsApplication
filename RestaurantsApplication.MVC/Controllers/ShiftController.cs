@@ -4,6 +4,7 @@ using RestaurantsApplication.MVC.Models.Location;
 using RestaurantsApplication.MVC.Models.Shift;
 using RestaurantsApplication.Services.Contracts;
 using static RestaurantsApplication.MVC.Messages.ErrorMessages;
+using static RestaurantsApplication.MVC.Messages.ProcessErrorMessages;
 
 namespace RestaurantsApplication.MVC.Controllers
 {
@@ -22,121 +23,145 @@ namespace RestaurantsApplication.MVC.Controllers
 
         public async Task<IActionResult> ViewAll(string locationCode, DateTime? date)
         {
-            DateTime filterDate;
-            if (date.HasValue)
+            try
             {
-                filterDate = date.Value;
-            }
-            else
-            {
-                filterDate = DateTime.Now.Date;
-            }
-
-            ViewBag.Date = filterDate.Date.ToString("yyyy-MM-dd");
-
-            var locationDTOs = await _locationService.GetAllAsync();
-
-            var locationModels = locationDTOs
-                .Select(d => new LocationShortInfoViewModel
+                DateTime filterDate;
+                if (date.HasValue)
                 {
-                    Name = d.Name,
-                    Code = d.Code
-                });
-
-            if (string.IsNullOrEmpty(locationCode))
-            {
-                var modelWithLocations = new ShiftsWithLocationsViewModel
+                    filterDate = date.Value;
+                }
+                else
                 {
-                    Locations = locationModels
-                };
-                return View(modelWithLocations);
+                    filterDate = DateTime.Now.Date;
+                }
+
+                ViewBag.Date = filterDate.Date.ToString("yyyy-MM-dd");
+
+                var locationDTOs = await _locationService.GetAllAsync();
+
+                var locationModels = locationDTOs
+                    .Select(d => new LocationShortInfoViewModel
+                    {
+                        Name = d.Name,
+                        Code = d.Code
+                    });
+
+                if (string.IsNullOrEmpty(locationCode))
+                {
+                    var modelWithLocations = new ShiftsWithLocationsViewModel
+                    {
+                        Locations = locationModels
+                    };
+                    return View(modelWithLocations);
+                }
+
+                ViewBag.LocationCode = locationCode;
+
+                var shiftDTOs = await _shiftService.GetByDateAndLocationAsync(filterDate, locationCode);
+                var model = MapModel(locationModels, shiftDTOs);
+
+                int overlappedShifts = (await _shiftService.GetOverlappedShiftsAsync(filterDate, locationCode))
+                    .Count(s => model.NotCompletedShifts
+                    .Any(ns => ns.ShiftId == s.ShiftId) == false);
+
+                model.NotCompletedCount = model.NotCompletedShifts.Count() + overlappedShifts;
+
+                return View(model);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error", "Home", new { message = RetrievingShiftsError });
             }
 
-            ViewBag.LocationCode = locationCode;
-
-            var shiftDTOs = await _shiftService.GetByDateAndLocationAsync(filterDate, locationCode);
-            var model = MapModel(locationModels, shiftDTOs);
-
-            int overlappedShifts = (await _shiftService.GetOverlappedShiftsAsync(filterDate, locationCode))
-                .Count(s => model.NotCompletedShifts
-                .Any(ns => ns.ShiftId == s.ShiftId) == false);
-
-            model.NotCompletedCount = model.NotCompletedShifts.Count() + overlappedShifts;
-
-            return View(model);
         }
 
         [HttpGet]
         public async Task<IActionResult> ManageNotCompletedShifts(DateTime date, string locationCode)
         {
-            var model = new ManageShiftsViewModel()
+            try
             {
-                LocationCode = locationCode
-            };
+                var model = new ManageShiftsViewModel()
+                {
+                    LocationCode = locationCode
+                };
 
-            model.OverlappedShifts = await MapOverlappedShifts(date, locationCode);
+                model.OverlappedShifts = await MapOverlappedShifts(date, locationCode);
 
-            model.NotCompletedShifts = (await MapNotCompletedShifts(date, locationCode))
-                .Where(s => model.OverlappedShifts.Any(os => os.ShiftId == s.ShiftId) == false)
-                .ToList();
+                model.NotCompletedShifts = (await MapNotCompletedShifts(date, locationCode))
+                    .Where(s => model.OverlappedShifts.Any(os => os.ShiftId == s.ShiftId) == false)
+                    .ToList();
 
-            model.Date = date;
+                model.Date = date;
 
-            return View(model);
+                return View(model);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error", "Home", new { message = CouldntLoadError });
+            }
+
         }
 
         [HttpPost]
         public async Task<IActionResult> ManageNotCompletedShifts(ManageShiftsViewModel model)
         {
-            if (model.NotCompletedShifts.Count > 0)
+            try
             {
-                foreach (var shift in model.NotCompletedShifts)
+                if (model.NotCompletedShifts.Count > 0)
                 {
-                    await _shiftService.ApplyRoleAsync(shift.ShiftId, shift.RoleId, model.LocationCode);
+                    foreach (var shift in model.NotCompletedShifts)
+                    {
+                        await _shiftService.ApplyRoleAsync(shift.ShiftId, shift.RoleId, model.LocationCode);
+                    }
+
+                    model.NotCompletedShifts.Clear();
                 }
 
-                model.NotCompletedShifts.Clear();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                await MapCollections(model);
-
-                return View(model);
-            }
-
-            CheckForErrors(model);
-
-            if (ModelState.ErrorCount > 0)
-            {
-                await MapCollections(model);
-
-                return View(model);
-            }
-
-            foreach (var shift in model.OverlappedShifts.Where(s => s.ForRemoval))
-            {
-                await _shiftService.RemoveShiftAsync(shift.ShiftId);
-            }
-            model.OverlappedShifts.RemoveAll(s => s.ForRemoval);
-
-            var dtos = model.OverlappedShifts
-                .Select(s => new OverlappedShiftDTO
+                if (!ModelState.IsValid)
                 {
-                    ShiftId = s.ShiftId,
-                    Start = s.Start,
-                    BreakStart = s.BreakStart,
-                    BreakEnd = s.BreakEnd,
-                    End = s.End,
-                    RoleId = s.RoleId
-                });
+                    await MapCollections(model);
 
-            await _shiftService.ResolveOverlappedShiftsAsync(dtos);
-            
-            var date = model.Date.Date;
-            var locationCode = model.LocationCode;
+                    return View(model);
+                }
 
-            return RedirectToAction(nameof(ViewAll), new { locationCode, date });
+                CheckForErrors(model);
+
+                if (ModelState.ErrorCount > 0)
+                {
+                    await MapCollections(model);
+
+                    return View(model);
+                }
+
+                foreach (var shift in model.OverlappedShifts.Where(s => s.ForRemoval))
+                {
+                    await _shiftService.RemoveShiftAsync(shift.ShiftId);
+                }
+                model.OverlappedShifts.RemoveAll(s => s.ForRemoval);
+
+                var dtos = model.OverlappedShifts
+                    .Select(s => new OverlappedShiftDTO
+                    {
+                        ShiftId = s.ShiftId,
+                        Start = s.Start,
+                        BreakStart = s.BreakStart,
+                        BreakEnd = s.BreakEnd,
+                        End = s.End,
+                        RoleId = s.RoleId
+                    });
+
+                await _shiftService.ResolveOverlappedShiftsAsync(dtos);
+
+                var date = model.Date.Date;
+                var locationCode = model.LocationCode;
+
+                return RedirectToAction(nameof(ViewAll), new { locationCode, date });
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error", "Home", new { message = CouldntProcessError });
+            }
+
         }
 
         private static ShiftsWithLocationsViewModel MapModel(IEnumerable<LocationShortInfoViewModel> locationModels, IEnumerable<ShiftShortInfoDTO> shiftDTOs)

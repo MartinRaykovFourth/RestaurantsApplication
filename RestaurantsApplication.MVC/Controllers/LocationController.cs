@@ -3,6 +3,7 @@ using RestaurantsApplication.DTOs.LocationDTOs;
 using RestaurantsApplication.MVC.Models.Location;
 using RestaurantsApplication.Services.Contracts;
 using static RestaurantsApplication.MVC.Messages.SuccessMessages;
+using static RestaurantsApplication.MVC.Messages.ProcessErrorMessages;
 
 namespace RestaurantsApplication.MVC.Controllers
 {
@@ -26,77 +27,116 @@ namespace RestaurantsApplication.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(LocationShortInfoViewModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return View(model);
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                var dto = new LocationShortInfoDTO
+                {
+                    Name = model.Name,
+                    Code = model.Code
+                };
+
+                await _locationService.AddAsync(dto);
+
+                TempData["message"] = LocationAdded;
+                return RedirectToAction(nameof(Add));
             }
-
-            var dto = new LocationShortInfoDTO
+            catch (Exception)
             {
-                Name = model.Name,
-                Code = model.Code
-            };
-
-            await _locationService.AddAsync(dto);
-
-            TempData["message"] = LocationAdded;
-            return RedirectToAction(nameof(Add));
+                return RedirectToAction("Error", "Home", new { message = CouldntProcessError });
+            }
         }
 
         public async Task<IActionResult> ViewAll()
         {
-            var dtos = await _locationService.GetAllAsync();
-
-            IEnumerable<LocationWithCodeViewModel> models = dtos.Select(d => new LocationWithCodeViewModel
+            try
             {
-                Id = d.Id,
-                Name = d.Name,
-                Code = d.Code
-            })
-                .ToList();
-            return View(models);
+                var dtos = await _locationService.GetAllAsync();
+
+                IEnumerable<LocationWithCodeViewModel> models = dtos.Select(d => new LocationWithCodeViewModel
+                {
+                    Id = d.Id,
+                    Name = d.Name,
+                    Code = d.Code
+                })
+                    .ToList();
+                return View(models);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error", "Home", new { message = RetrievingLocationsError });
+            }
+
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(int locationId)
         {
-            var dto = await _locationService.GetByIdAsync(locationId);
-
-            var model = new LocationWithCodeViewModel()
+            try
             {
-                Id = dto.Id,
-                Name = dto.Name,
-                Code = dto.Code
-            };
+                var dto = await _locationService.GetByIdAsync(locationId);
 
-            return View(model);
+                var model = new LocationWithCodeViewModel()
+                {
+                    Id = dto.Id,
+                    Name = dto.Name,
+                    Code = dto.Code
+                };
+
+                return View(model);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error", "Home", new { message = CouldntLoadError });
+            }
+
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(LocationWithCodeViewModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return View(model);
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                var dto = new LocationWithCodeDTO()
+                {
+                    Id = model.Id,
+                    Name = model.Name,
+                    Code = model.Code
+                };
+
+                await _locationService.EditAsync(dto);
+
+                return RedirectToAction(nameof(ViewAll));
             }
-
-            var dto = new LocationWithCodeDTO()
+            catch (Exception)
             {
-                Id = model.Id,
-                Name = model.Name,
-                Code = model.Code
-            };
-
-            await _locationService.EditAsync(dto);
-
-            return RedirectToAction(nameof(ViewAll));
+                return RedirectToAction("Error", "Home", new { message = CouldntProcessError });
+            }
+          
         }
 
         public async Task<IActionResult> Delete(int locationId)
         {
-            await _locationService.DeleteAsync(locationId);
+            try
+            {
+                await _locationService.DeleteAsync(locationId);
 
-            return RedirectToAction(nameof(ViewAll));
+                return RedirectToAction(nameof(ViewAll));
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error", "Home", new { message = CouldntProcessError });
+            }
+           
         }
     }
 }

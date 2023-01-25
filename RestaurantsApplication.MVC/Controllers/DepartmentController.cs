@@ -3,6 +3,7 @@ using RestaurantsApplication.DTOs.DepartmentDTOs;
 using RestaurantsApplication.MVC.Models.Department;
 using RestaurantsApplication.Services.Contracts;
 using static RestaurantsApplication.MVC.Messages.SuccessMessages;
+using static RestaurantsApplication.MVC.Messages.ProcessErrorMessages;
 
 namespace RestaurantsApplication.MVC.Controllers
 {
@@ -20,90 +21,136 @@ namespace RestaurantsApplication.MVC.Controllers
         [HttpGet]
         public async Task<IActionResult> Add()
         {
-            var model = new DepartmentShortInfoViewModel()
+            try
             {
-                Locations = await _locationService.GetLocationsWithIdsAsync()
-            };
+                var model = new DepartmentShortInfoViewModel()
+                {
+                    Locations = await _locationService.GetLocationsWithIdsAsync()
+                };
 
-            return View(model);
+                return View(model);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error", "Home", new { message = CouldntLoadError });
+            }
+   
         }
 
         [HttpPost]
         public async Task<IActionResult> Add(DepartmentShortInfoViewModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return View(model);
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                var dto = new DepartmentShortInfoDTO()
+                {
+                    Name = model.Name,
+                    LocationId = model.LocationId
+                };
+
+                await _departmentService.AddAsync(dto);
+
+                TempData["message"] = DepartmentAdded;
+                return RedirectToAction(nameof(Add));
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error", "Home", new { message = CouldntProcessError });
             }
 
-            var dto = new DepartmentShortInfoDTO()
-            {
-                Name = model.Name,
-                LocationId = model.LocationId
-            };
-
-            await _departmentService.AddAsync(dto);
-
-            TempData["message"] = DepartmentAdded;
-            return RedirectToAction(nameof(Add));
         }
 
         public async Task<IActionResult> ViewAll()
         {
-            var dtos = await _departmentService.GetAllAsync();
-
-            IEnumerable<DepartmentWithLocationViewModel> models = dtos.Select(d => new DepartmentWithLocationViewModel
+            try
             {
-                Id = d.Id,
-                Name = d.Name,
-                LocationName = d.LocationName
-            })
-                .ToList();
+                var dtos = await _departmentService.GetAllAsync();
 
-            return View(models);
+                IEnumerable<DepartmentWithLocationViewModel> models = dtos.Select(d => new DepartmentWithLocationViewModel
+                {
+                    Id = d.Id,
+                    Name = d.Name,
+                    LocationName = d.LocationName
+                })
+                    .ToList();
+
+                return View(models);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error", "Home", new { message = RetrievingDepartmentsError });
+            }
+
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(int departmentId)
         {
-            var dto = await _departmentService.GetByIdAsync(departmentId);
-
-            var model = new DepartmentFullInfoViewModel()
+            try
             {
-                Id = dto.Id,
-                Name = dto.Name,
-                LocationId=dto.LocationId,
-                Locations = await _locationService.GetLocationsWithIdsAsync()
-            };
+                var dto = await _departmentService.GetByIdAsync(departmentId);
 
-            return View(model);
+                var model = new DepartmentFullInfoViewModel()
+                {
+                    Id = dto.Id,
+                    Name = dto.Name,
+                    LocationId = dto.LocationId,
+                    Locations = await _locationService.GetLocationsWithIdsAsync()
+                };
+
+                return View(model);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error", "Home", new { message = CouldntLoadError });
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(DepartmentFullInfoViewModel model)
         {
-            if(!ModelState.IsValid)
+            try
             {
-                return View(model);
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                var dto = new DepartmentFullInfoDTO()
+                {
+                    Id = model.Id,
+                    Name = model.Name,
+                    LocationId = model.LocationId
+                };
+
+                await _departmentService.EditAsync(dto);
+
+                return RedirectToAction(nameof(ViewAll));
             }
-
-            var dto = new DepartmentFullInfoDTO()
+            catch (Exception)
             {
-                Id = model.Id,
-                Name = model.Name,
-                LocationId = model.LocationId
-            };
-
-            await _departmentService.EditAsync(dto);
-
-            return RedirectToAction(nameof(ViewAll));
+                return RedirectToAction("Error", "Home", new { message = CouldntProcessError });
+            }
         }
 
         public async Task<IActionResult> Delete(int departmentId)
         {
-           await _departmentService.DeleteAsync(departmentId);
+            try
+            {
+                await _departmentService.DeleteAsync(departmentId);
 
-            return RedirectToAction(nameof(ViewAll));
+                return RedirectToAction(nameof(ViewAll));
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error", "Home", new { message = CouldntProcessError });
+            }
+           
         }
     }
 }

@@ -2,7 +2,6 @@
 using RestaurantsApplication.DTOs.LabourDTOs;
 using RestaurantsApplication.DTOs.EmployeeDTOs;
 using RestaurantsApplication.Services.Contracts;
-using static System.Globalization.CultureInfo;
 
 namespace RestaurantsApplication.Services.Services
 {
@@ -20,9 +19,8 @@ namespace RestaurantsApplication.Services.Services
 
             decimal? weeklyCost = 0;
 
-            DateTime startOfWeek = date.AddDays(
-                 1 -
-                (date.DayOfWeek == 0 ? 7 : (int)date.DayOfWeek));
+            DateTime startOfWeek = date
+                .AddDays(1 - (date.DayOfWeek == 0 ? 7 : (int)date.DayOfWeek));
 
             for (int i = 0; i < 7; i++)
             {

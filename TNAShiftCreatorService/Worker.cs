@@ -152,7 +152,30 @@ namespace TNAShiftCreatorService
 
         private async Task ManageShifts(Request req, List<Shift> shifts)
         {
-            foreach (var rec in req.Records) // suzdavame shiftove v lista ot vseki edin record
+            await ProcessRecords(req, shifts);
+
+            RemoveDoubledShiftsFromList(shifts);
+
+            shifts.RemoveAll(sh => _context.Shifts
+                  .Any(s => s.Employee.Code == sh.Employee.Code
+                       && s.Start.HasValue && sh.Start.HasValue && s.Start == sh.Start
+                       && s.End.HasValue && sh.End.HasValue && s.End == sh.End
+                       && (
+                       (s.BreakStart.HasValue && sh.BreakStart.HasValue && s.BreakStart == sh.BreakStart)
+                       || (s.BreakStart.HasValue == false && sh.BreakStart.HasValue == false)
+                       )
+                       && (
+                       (s.BreakEnd.HasValue && sh.BreakEnd.HasValue && s.BreakEnd == sh.BreakEnd)
+                       || (s.BreakEnd.HasValue == false && sh.BreakEnd.HasValue == false)
+                       )
+                       ));
+
+            await ManageBreaksForExistingShifts(shifts);
+        }
+
+        private async Task ProcessRecords(Request req, List<Shift> shifts)
+        {
+            foreach (var rec in req.Records)
             {
                 switch (rec.ClockStatus)
                 {
@@ -173,10 +196,13 @@ namespace TNAShiftCreatorService
                         break;
                 }
             }
+        }
 
-            for (int i = 0; i < shifts.Count; i++) // proverqvame shift lista za doubled shifts i gi chistim
+        private static void RemoveDoubledShiftsFromList(List<Shift> shifts)
+        {
+            for (int i = 0; i < shifts.Count; i++)
             {
-                var currentShift = shifts[i]; // moje da si prost i da e null 
+                var currentShift = shifts[i];
 
                 var doubledShifts = shifts.Count(s =>
                         s.Employee.Code == currentShift.Employee.Code
@@ -213,25 +239,11 @@ namespace TNAShiftCreatorService
                     shifts.Add(currentShift);
                 }
             }
+        }
 
-            shifts.RemoveAll(sh =>                                              //proverqvame bazata za dobuled i gi chistim ot lista
-                _context.Shifts.Any(s =>
-                s.Employee.Code == sh.Employee.Code
-                && s.Start.HasValue && sh.Start.HasValue && s.Start == sh.Start
-                && s.End.HasValue && sh.End.HasValue && s.End == sh.End
-                &&
-                (
-                (s.BreakStart.HasValue && sh.BreakStart.HasValue && s.BreakStart == sh.BreakStart)
-                || (s.BreakStart.HasValue == false && sh.BreakStart.HasValue == false)
-                )
-                &&
-                (
-                (s.BreakEnd.HasValue && sh.BreakEnd.HasValue && s.BreakEnd == sh.BreakEnd)
-                || (s.BreakEnd.HasValue == false && sh.BreakEnd.HasValue == false)
-                )
-                ));
-
-            for (int i = 0; i < shifts.Count; i++) // napasvame brakeove za shiftove ot predni requesti i triem nevalidni shiftove
+        private async Task ManageBreaksForExistingShifts(List<Shift> shifts)
+        {
+            for (int i = 0; i < shifts.Count; i++)
             {
                 var currentShift = shifts[i];
 
@@ -269,53 +281,6 @@ namespace TNAShiftCreatorService
                     i--;
                 }
             }
-        }
-
-        private async Task<Shift> CreateNewShift(Request req, Record rec)
-        {
-            var newShift = new Shift();
-
-            var employee = await _context.Employees
-                .Include(e => e.Employments)
-                .ThenInclude(e => e.Department)
-                .ThenInclude(d => d.Location)
-                .Where(e => e.Code == rec.EmployeeCode)
-                .SingleAsync();
-
-            newShift.EmployeeId = employee.Id;
-            newShift.Employee = employee;
-
-            if (employee.Employments.Count(e =>
-            e.Department.Location.Code == req.LocationCode
-            && e.IsDeleted == false) == 1)
-            {
-                var employment = employee.Employments
-                     .Where(e =>
-                     e.Department.Location.Code == req.LocationCode
-                     && e.IsDeleted == false)
-                     .Single();
-
-                newShift.DepartmentId = employment.DepartmentId;
-                newShift.RoleId = employment.RoleId;
-            }
-
-            switch (rec.ClockStatus)
-            {
-                case ClockStatus.ClockIn:
-                    newShift.Start = rec.ClockValue;
-                    break;
-                case ClockStatus.ClockOut:
-                    newShift.End = rec.ClockValue;
-                    break;
-                case ClockStatus.BreakStart:
-                    newShift.BreakStart = rec.ClockValue;
-                    break;
-                case ClockStatus.BreakEnd:
-                    newShift.BreakEnd = rec.ClockValue;
-                    break;
-            }
-
-            return newShift;
         }
 
         private async Task ManageClockStatusOrCreateShift(Request req, Record rec, List<Shift> shifts, ClockStatus clockStatus)
@@ -404,5 +369,53 @@ namespace TNAShiftCreatorService
             existingShift = await CreateNewShift(req, rec);
             shifts.Add(existingShift);
         }
+
+        private async Task<Shift> CreateNewShift(Request req, Record rec)
+        {
+            var newShift = new Shift();
+
+            var employee = await _context.Employees
+                .Include(e => e.Employments)
+                .ThenInclude(e => e.Department)
+                .ThenInclude(d => d.Location)
+                .Where(e => e.Code == rec.EmployeeCode)
+                .SingleAsync();
+
+            newShift.EmployeeId = employee.Id;
+            newShift.Employee = employee;
+
+            if (employee.Employments.Count(e =>
+            e.Department.Location.Code == req.LocationCode
+            && e.IsDeleted == false) == 1)
+            {
+                var employment = employee.Employments
+                     .Where(e =>
+                     e.Department.Location.Code == req.LocationCode
+                     && e.IsDeleted == false)
+                     .Single();
+
+                newShift.DepartmentId = employment.DepartmentId;
+                newShift.RoleId = employment.RoleId;
+            }
+
+            switch (rec.ClockStatus)
+            {
+                case ClockStatus.ClockIn:
+                    newShift.Start = rec.ClockValue;
+                    break;
+                case ClockStatus.ClockOut:
+                    newShift.End = rec.ClockValue;
+                    break;
+                case ClockStatus.BreakStart:
+                    newShift.BreakStart = rec.ClockValue;
+                    break;
+                case ClockStatus.BreakEnd:
+                    newShift.BreakEnd = rec.ClockValue;
+                    break;
+            }
+
+            return newShift;
+        }
+
     }
 }
