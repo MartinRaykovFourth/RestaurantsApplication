@@ -201,7 +201,7 @@ namespace RestaurantsApplication.MVC.Controllers
 
                 if (model.IsMain
                     && !await _validatorService.CanEmploymentBeMainAsync(model.EmployeeId)
-                    && model.Id != await _employmentService.GetMainEmploymentId(model.EmployeeId))
+                    && model.Id != await _employmentService.GetMainEmploymentIdAsync(model.EmployeeId))
                 {
                     ModelState.AddModelError(nameof(model.IsMain), EmployeeAlreadyHasMainEmploymentError);
                     await MapCollections(model);

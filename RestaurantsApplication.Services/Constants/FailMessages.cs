@@ -1,4 +1,4 @@
-﻿namespace TNAShiftCreatorService.Constants
+﻿namespace RestaurantsApplication.Services.Constants
 {
     public class FailMessages
     {

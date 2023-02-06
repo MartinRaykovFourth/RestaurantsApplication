@@ -65,9 +65,12 @@ namespace RestaurantsApplication.MVC.Controllers
             }
             catch (Exception)
             {
-                return RedirectToAction("Error", "Home", new { message = RetrievingCostsError });
+                return RedirectToAction("Error", "Home", new
+                {
+                    message = RetrievingCostsError
+                });
             }
-            
+
         }
     }
 }

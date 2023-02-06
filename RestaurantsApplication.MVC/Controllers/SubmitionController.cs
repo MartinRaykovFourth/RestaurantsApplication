@@ -29,7 +29,7 @@ namespace RestaurantsApplication.MVC.Controllers
 
                 ViewBag.Date = filterDate.Date.ToString("yyyy-MM-dd");
 
-                var dtos = await _submitionService.GetRequestsByDate(filterDate);
+                var dtos = await _submitionService.GetRequestsByDateAsync(filterDate);
 
                 var models = dtos
                     .Select(d => new SubmitionShortInfoViewModel

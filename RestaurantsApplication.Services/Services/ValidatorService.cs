@@ -1,54 +1,43 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RestaurantsApplication.Data;
+﻿using RestaurantsApplication.Repositories.Contracts;
 using RestaurantsApplication.Services.Contracts;
 
 namespace RestaurantsApplication.Services.Services
 {
     public class ValidatorService : IValidatorService
     {
-        private readonly RestaurantsContext _context;
+        private readonly IDepartmentRepository _departmentRepository;
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IEmploymentRepository _employmentRepository;
 
-        public ValidatorService(RestaurantsContext context)
+        public ValidatorService(IDepartmentRepository departmentRepository, 
+            IEmployeeRepository employeeRepository, 
+            IEmploymentRepository employmentRepository)
         {
-            _context = context;
+            _departmentRepository = departmentRepository;
+            _employeeRepository = employeeRepository;
+            _employmentRepository = employmentRepository;
         }
 
         public async Task<bool> ValidateDepartmentAsync(int departmentId, int locationId)
         {
-            var location = await _context.Locations
-                .Include(l => l.Departments)
-                .Where(l => l.Id == locationId)
-                .SingleOrDefaultAsync();
+            var departments = await _departmentRepository.GetIdsByLocationAsync(locationId);
 
-            return location.Departments.Any(d => d.Id == departmentId);
+            return departments.Any(d => d == departmentId);
         }
 
         public async Task<int> ValidateEmployeeAsync(string employeeCode)
         {
-           return await _context.Employees
-                  .Where(e => e.Code == employeeCode)
-                  .Select(e => e.Id)
-                  .SingleOrDefaultAsync();
+            return await _employeeRepository.GetIdByCodeAsync(employeeCode);
         }
 
         public async Task<bool> CanEmploymentBeMainAsync(int employeeId)
         {
-            var employee = await _context.Employees 
-                .Include(e => e.Employments) 
-                .Where(e => e.Id == employeeId)
-                .SingleAsync();
-
-            return !employee.Employments.Any(e => e.IsMain);
+            return !await _employmentRepository.EmployeeHasMainEmploymentAsync(employeeId);
         }
 
         public async Task<bool> ValidateEmploymentRoleAsync(int roleId, int departmentId, int employeeId)
         {
-            var employee = await _context.Employees
-                .Include(e => e.Employments)
-                .Where(e => e.Id == employeeId)
-                .SingleAsync();
-
-            return !employee.Employments.Any(e => e.RoleId == roleId && e.DepartmentId == departmentId);
+           return !await _employmentRepository.EmploymentWithRoleAndDepartmentExist(roleId, departmentId, employeeId);
         }
     }
 }

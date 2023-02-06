@@ -41,23 +41,29 @@ namespace RestaurantsApplication.Data
 
             //SeedRoles(modelBuilder); uncomment on first migration
 
+            modelBuilder.Entity<Employee>().HasQueryFilter(e => !e.IsDeleted);
+            modelBuilder.Entity<Employment>().HasQueryFilter(e => !e.IsDeleted);
+            modelBuilder.Entity<Department>().HasQueryFilter(e => !e.IsDeleted);
+            modelBuilder.Entity<Location>().HasQueryFilter(e => !e.IsDeleted);
+
+
             base.OnModelCreating(modelBuilder);
         }
 
-        //private void SeedRoles(ModelBuilder builder)
-        //{
-        //    var roles = new List<Role>()
-        //    {
-        //        new Role{ Id = 1, Name = "Manager"},
-        //        new Role{ Id = 2, Name = "Chef"},
-        //        new Role{ Id = 3, Name = "Bar Server"},
-        //        new Role{ Id = 4, Name = "Waiter"},
-        //        new Role{ Id = 5, Name = "Runner"},
-        //        new Role{ Id = 6, Name = "Dishwasher"},
-        //        new Role{ Id = 7, Name = "Cleaner"},
-        //    };
+        private void SeedRoles(ModelBuilder builder)
+        {
+            var roles = new List<Role>()
+            {
+                new Role{ Id = 1, Name = "Manager"},
+                new Role{ Id = 2, Name = "Chef"},
+                new Role{ Id = 3, Name = "Bar Server"},
+                new Role{ Id = 4, Name = "Waiter"},
+                new Role{ Id = 5, Name = "Runner"},
+                new Role{ Id = 6, Name = "Dishwasher"},
+                new Role{ Id = 7, Name = "Cleaner"},
+            };
 
-        //    builder.Entity<Role>().HasData(roles);
-        //}
+            builder.Entity<Role>().HasData(roles);
+        }
     }
 }

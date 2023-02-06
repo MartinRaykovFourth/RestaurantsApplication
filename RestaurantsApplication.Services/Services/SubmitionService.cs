@@ -1,31 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RestaurantsApplication.Data;
-using RestaurantsApplication.DTOs.RequestDTOs;
+﻿using RestaurantsApplication.DTOs.RequestDTOs;
+using RestaurantsApplication.Repositories.Contracts;
 using RestaurantsApplication.Services.Contracts;
 
 namespace RestaurantsApplication.Services.Services
 {
     public class SubmitionService : ISubmitionService
     {
-        private readonly RestaurantsContext _context;
+        private readonly ISubmitionRepository _repo;
 
-        public SubmitionService(RestaurantsContext context)
+        public SubmitionService(ISubmitionRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
-        public async Task<IEnumerable<RequestShortInfoDTO>> GetRequestsByDate(DateTime date)
+        public async Task<IEnumerable<RequestShortInfoDTO>> GetRequestsByDateAsync(DateTime date)
         {
-            return await _context.Requests
-                .Where(r => r.Date.Date == date.Date)
-                .Select(r => new RequestShortInfoDTO
-                {
-                    Date = r.Date,
-                    LocationCode = r.LocationCode,
-                    Status = r.Status,
-                    FailMessage = r.FailMessage
-                })
-                .ToListAsync();
+            return await _repo.GetAllByDateAsync(date);
         }
     }
 }

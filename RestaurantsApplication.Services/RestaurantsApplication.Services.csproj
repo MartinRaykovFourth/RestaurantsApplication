@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RestaurantsApplication.Data\RestaurantsApplication.Data.csproj" />
     <ProjectReference Include="..\RestaurantsApplication.DTOs\RestaurantsApplication.DTOs.csproj" />
+    <ProjectReference Include="..\RestaurantsApplication.Repositories\RestaurantsApplication.Repositories.csproj" />
   </ItemGroup>
 
 </Project>

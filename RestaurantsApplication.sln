@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestaurantsApplication.Api"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TNAShiftCreatorService", "TNAShiftCreatorService\TNAShiftCreatorService.csproj", "{BF4616DE-EECB-4DF6-A9D3-8C38BDDF98D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestaurantsApplication.Tests", "RestaurantsApplication.Tests\RestaurantsApplication.Tests.csproj", "{285181AB-03C0-4620-B9F2-F6BC9CE9BCE8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RestaurantsApplication.Tests", "RestaurantsApplication.Tests\RestaurantsApplication.Tests.csproj", "{285181AB-03C0-4620-B9F2-F6BC9CE9BCE8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestaurantsApplication.Repositories", "RestaurantsApplication.Repositories\RestaurantsApplication.Repositories.csproj", "{C5E97855-AC23-41C7-B6F5-6C7BCCB36F0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{285181AB-03C0-4620-B9F2-F6BC9CE9BCE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{285181AB-03C0-4620-B9F2-F6BC9CE9BCE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{285181AB-03C0-4620-B9F2-F6BC9CE9BCE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5E97855-AC23-41C7-B6F5-6C7BCCB36F0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5E97855-AC23-41C7-B6F5-6C7BCCB36F0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5E97855-AC23-41C7-B6F5-6C7BCCB36F0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5E97855-AC23-41C7-B6F5-6C7BCCB36F0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

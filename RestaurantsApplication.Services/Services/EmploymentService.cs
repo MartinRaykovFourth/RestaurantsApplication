@@ -1,109 +1,57 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RestaurantsApplication.Data;
-using RestaurantsApplication.Data.Entities;
-using RestaurantsApplication.DTOs.EmploymentDTOs;
+﻿using RestaurantsApplication.DTOs.EmploymentDTOs;
+using RestaurantsApplication.Repositories.Contracts;
 using RestaurantsApplication.Services.Contracts;
 
 namespace RestaurantsApplication.Services.Services
 {
     public class EmploymentService : IEmploymentService
     {
-        private readonly RestaurantsContext _context;
+        private readonly IEmploymentRepository _employmentRepository;
 
-        public EmploymentService(RestaurantsContext context)
+        public EmploymentService(IEmploymentRepository repo)
         {
-            _context = context;
+            _employmentRepository = repo;
         }
 
         public async Task AddAsync(EmploymentShortInfoDTO dto)
         {
-            var employment = new Employment()
-            {
-                StartDate = dto.StartDate,
-                EndDate = dto.EndDate,
-                DepartmentId = dto.DepartmentId,
-                EmployeeId = dto.EmployeeId,
-                RoleId = dto.RoleId,
-                IsMain = dto.IsMain,
-                Rate = dto.Rate
-            };
+            _employmentRepository.Add(dto);
 
-            _context.Employments.Add(employment);
-            await _context.SaveChangesAsync();
+            await _employmentRepository.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<EmploymentDetailsDTO>> GetEmploymentsForEmployeeAsync(int employeeId)
         {
-            return await _context.Employments
-                .Where(e => e.EmployeeId == employeeId && e.IsDeleted == false)
-                .Select(e => new EmploymentDetailsDTO
-                {
-                    Id = e.Id,
-                    StartDate = e.StartDate.ToString("dd/MM/yyyy"),
-                    EndDate = e.EndDate != null ? e.EndDate.Value.ToString("dd/MM/yyyy") : "N/A",
-                    DepartmentName = e.Department.Name,
-                    RoleName = e.Role.Name,
-                    LocationName = e.Department.Location.Name,
-                    IsMain = e.IsMain,
-                    Rate = e.Rate
-                    
-                })
-                .ToListAsync();
+            return await _employmentRepository.GetEmploymentsForEmployeeAsync(employeeId);
         }
 
         public async Task<EmploymentWithIdDTO> GetByIdAsync(int employmentId)
         {
-            return await _context.Employments
-                .Where(e => e.Id == employmentId && e.IsDeleted == false)
-                .Select(e => new EmploymentWithIdDTO
-                {
-                    DepartmentId = e.DepartmentId,
-                    EmployeeId = e.EmployeeId,
-                    EndDate = e.EndDate,
-                    Id = e.Id,
-                    IsMain = e.IsMain,
-                    LocationId = e.Department.LocationId,
-                    Rate = e.Rate,
-                    RoleId = e.RoleId,
-                    StartDate = e.StartDate,
-                    EmployeeCode = e.Employee.Code
-                })
-                .SingleAsync();
+            return await _employmentRepository.GetByIdAsync(employmentId);
         }
 
         public async Task EditAsync(EmploymentWithIdDTO dto)
         {
-            var employment = await _context.Employments.FindAsync(dto.Id);
+            await _employmentRepository.EditAsync(dto);
 
-            employment.IsMain = dto.IsMain;
-            employment.RoleId = dto.RoleId;
-            employment.Rate = dto.Rate;
-            employment.StartDate = dto.StartDate;
-            employment.EndDate = dto.EndDate;
-            employment.DepartmentId = dto.DepartmentId;
-
-            await _context.SaveChangesAsync();
+            await _employmentRepository.SaveChangesAsync();
         }
 
-        public async Task<int> GetMainEmploymentId(int employeeId)
+        public async Task<int> GetMainEmploymentIdAsync(int employeeId)
         {
-            return await _context.Employments
-                .Where(e => e.EmployeeId == employeeId && e.IsMain)
-                .Select(e => e.Id)
-                .SingleAsync();
+            return await _employmentRepository.GetMainEmploymentId(employeeId);
         }
 
         public async Task<int> DeleteAsync(int employmentId)
         {
-            var employment = await _context.Employments.FindAsync(employmentId);
+            var employment = await _employmentRepository.GetByIdAsync(employmentId);
 
             if (employment.IsMain)
                 return -1;
 
-            employment.EndDate = DateTime.Now;
-            employment.IsDeleted = true;
+            await _employmentRepository.DeleteAsync(employmentId);
 
-            await _context.SaveChangesAsync();
+            await _employmentRepository.SaveChangesAsync();
 
             return employment.EmployeeId;
         }

@@ -1,5 +1,4 @@
-﻿using RestaurantsApplication.Data;
-using RestaurantsApplication.DTOs.LabourDTOs;
+﻿using RestaurantsApplication.DTOs.LabourDTOs;
 using RestaurantsApplication.DTOs.EmployeeDTOs;
 using RestaurantsApplication.Services.Contracts;
 
@@ -8,7 +7,7 @@ namespace RestaurantsApplication.Services.Services
     public class LabourService : ILabourService
     {
         private readonly IShiftService _shiftService;
-        public LabourService(RestaurantsContext context, IShiftService shiftService)
+        public LabourService(IShiftService shiftService)
         {
             _shiftService = shiftService;
         }

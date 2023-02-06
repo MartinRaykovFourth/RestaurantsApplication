@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestaurantsApplication.Api.ApiDTOs;
-using RestaurantsApplication.Data;
-using RestaurantsApplication.Data.Entities;
+using RestaurantsApplication.DTOs.DatabaseCopiesDTOs;
+using RestaurantsApplication.Repositories.Contracts;
 
 namespace RestaurantsApplication.Api.Controllers
 {
@@ -9,28 +9,28 @@ namespace RestaurantsApplication.Api.Controllers
     [Route("[controller]")]
     public class ClockRecordsController : ControllerBase
     {
-        private readonly RestaurantsContext _context;
+        private readonly IRequestRepository _requestRepository;
 
-        public ClockRecordsController(RestaurantsContext context)
+        public ClockRecordsController(IRequestRepository requestRepository)
         {
-            _context = context;
+            _requestRepository = requestRepository;
         }
 
         [HttpPost]
         public async Task<IActionResult> PostClockRecords([FromBody]ClockRecordsDTO dto)
         {
-            var request = new Request()
+            var request = new RequestCopyDTO()
             {
                 Date = dto.Date,
                 LocationCode = dto.LocationCode,
                 Status = "Pending"
             };
 
-            var records = new List<Record>();
+            var records = new List<RecordCopyDTO>();
 
             foreach (var r in dto.Records)
             {
-                records.Add(new Record
+                records.Add(new RecordCopyDTO
                 {
                     Request = request,
                     ClockStatus = r.ClockStatus,
@@ -39,9 +39,8 @@ namespace RestaurantsApplication.Api.Controllers
                 });
             }
 
-            _context.Requests.Add(request);
-            _context.Records.AddRange(records);
-            await _context.SaveChangesAsync();
+            _requestRepository.Add(request, records);
+            await _requestRepository.SaveChangesAsync();
 
             return Ok();
         }

@@ -1,6 +1,4 @@
-﻿using RestaurantsApplication.Data.Entities;
-
-namespace RestaurantsApplication.DTOs.ShiftDTOs
+﻿namespace RestaurantsApplication.DTOs.ShiftDTOs
 {
     public class ShiftWithIdDTO
     {

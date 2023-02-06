@@ -1,6 +1,6 @@
 ﻿namespace RestaurantsApplication.DTOs.ShiftDTOs
 {
-    public class OverlappedShiftDTO
+    public class ShiftWithTimesDTO
     {
         public int ShiftId { get; set; }
         public string EmployeeName { get; set; } = null!;

@@ -140,7 +140,7 @@ namespace RestaurantsApplication.MVC.Controllers
                 model.OverlappedShifts.RemoveAll(s => s.ForRemoval);
 
                 var dtos = model.OverlappedShifts
-                    .Select(s => new OverlappedShiftDTO
+                    .Select(s => new ShiftWithTimesDTO
                     {
                         ShiftId = s.ShiftId,
                         Start = s.Start,

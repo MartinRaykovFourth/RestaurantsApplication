@@ -8,7 +8,7 @@ namespace RestaurantsApplication.Services.Contracts
         public Task<IEnumerable<EmploymentDetailsDTO>> GetEmploymentsForEmployeeAsync(int employeeId);
         public Task<EmploymentWithIdDTO> GetByIdAsync(int employmentId);
         public Task EditAsync(EmploymentWithIdDTO dto);
-        public Task<int> GetMainEmploymentId(int employeeId);
+        public Task<int> GetMainEmploymentIdAsync(int employeeId);
         public Task<int> DeleteAsync(int employmentId);
     }
 }

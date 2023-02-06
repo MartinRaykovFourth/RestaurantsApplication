@@ -1,100 +1,52 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RestaurantsApplication.Data;
-using RestaurantsApplication.Data.Entities;
-using RestaurantsApplication.DTOs.LocationDTOs;
+﻿using RestaurantsApplication.DTOs.LocationDTOs;
+using RestaurantsApplication.Repositories.Contracts;
 using RestaurantsApplication.Services.Contracts;
 
 namespace RestaurantsApplication.Services.Services
 {
     public class LocationService : ILocationService
     {
-        private readonly RestaurantsContext _context;
-        private readonly IDepartmentService _departmentService;
-        public LocationService(RestaurantsContext context, IDepartmentService departmentService)
+        private readonly ILocationRepository _locationRepo;
+
+        public LocationService(ILocationRepository locationRepo)
         {
-            _context = context;
-            _departmentService = departmentService;
+            _locationRepo = locationRepo;
         }
 
         public async Task<IEnumerable<LocationWithIdDTO>> GetLocationsWithIdsAsync()
         {
-            return await _context.Locations
-                .Where(l => l.IsDeleted == false)
-                .Select(l => new LocationWithIdDTO
-                {
-                    Id = l.Id,
-                    Name = l.Name
-                })
-                .ToListAsync();
+            return await _locationRepo.GetAllWithIdAsync();
         }
 
         public async Task AddAsync(LocationShortInfoDTO dto)
         {
-            var location = new Location()
-            {
-                Name = dto.Name,
-                Code = dto.Code
-            };
+            _locationRepo.Add(dto);
 
-            _context.Locations.Add(location);
-            await _context.SaveChangesAsync();
+            await _locationRepo.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<LocationWithCodeDTO>> GetAllAsync()
         {
-            return await _context.Locations
-                .Where(l => l.IsDeleted == false)
-                .Select(l => new LocationWithCodeDTO
-                {
-                    Id = l.Id,
-                    Name = l.Name,
-                    Code = l.Code
-                })
-                .ToListAsync();
+            return await _locationRepo.GetAllWithCodeAsync();
         }
 
         public async Task<LocationWithCodeDTO> GetByIdAsync(int locationId)
         {
-            return await _context.Locations
-                .Where(l => l.Id == locationId)
-                .Select(l => new LocationWithCodeDTO()
-                {
-                    Id = l.Id,
-                    Name = l.Name,
-                    Code = l.Code
-                })
-                .SingleOrDefaultAsync();
+            return await _locationRepo.GetByIdAsync(locationId);
         }
 
         public async Task EditAsync(LocationWithCodeDTO dto)
         {
-            var location = await _context.Locations
-                .Where(l => l.Id == dto.Id)
-                .SingleAsync();
+            await _locationRepo.EditAsync(dto);
 
-            location.Name = dto.Name;
-            location.Code = dto.Code;
-
-            await _context.SaveChangesAsync();
+            await _locationRepo.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int locationId)
         {
-            var location = await _context.Locations.FindAsync(locationId);
+            await _locationRepo.DeleteAsync(locationId);
 
-            var departments = await _context.Departments
-                .Where(d => d.LocationId == locationId && d.IsDeleted == false)
-                .Select(d => d.Id)
-                .ToListAsync();
-
-            foreach (var d in departments)
-            {
-                await _departmentService.DeleteAsync(d);
-            }
-
-            location.IsDeleted = true;
-
-            await _context.SaveChangesAsync();
+            await _locationRepo.SaveChangesAsync();
         }
 
     }
