@@ -185,8 +185,7 @@ namespace RestaurantsApplication.Repositories
             shift.DepartmentId = shift.Employee.Employments
                 .Where(e =>
                 e.RoleId == roleId
-                && e.Department.Location.Code == locationCode
-                && e.IsDeleted == false)
+                && e.Department.Location.Code == locationCode)
                 .Select(e => e.DepartmentId)
                 .Single();
         }

@@ -50,7 +50,9 @@ namespace RestaurantsApplication.Services.Services
 
                     if (isFailed)
                     {
-                        await _requestRepository.ChangeRequestStatusAsync(req.Id, Failed);
+                        req.Status = Failed;
+
+                        await _requestRepository.ChangeRequestStatusAsync(req.Id, req.Status);
                         SetFailMessage(req, errorsDictionary);
 
                         await _requestRepository.SaveChangesAsync();
@@ -61,7 +63,9 @@ namespace RestaurantsApplication.Services.Services
                     var shifts = new List<ShiftCopyDTO>();
                     await ManageShifts(req, shifts);
 
-                    await _requestRepository.ChangeRequestStatusAsync(req.Id, Completed);
+                    req.Status = Completed;
+
+                    await _requestRepository.ChangeRequestStatusAsync(req.Id, req.Status);
 
                     _shiftRepository.AddRange(shifts);
 

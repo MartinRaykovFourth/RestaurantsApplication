@@ -152,6 +152,11 @@ namespace RestaurantsApplication.MVC.Controllers
 
                 await _shiftService.ResolveOverlappedShiftsAsync(dtos);
 
+                foreach (var shift in dtos)
+                {
+                    await _shiftService.ApplyRoleAsync(shift.ShiftId, (int)shift.RoleId, model.LocationCode);
+                }
+
                 var date = model.Date.Date;
                 var locationCode = model.LocationCode;
 

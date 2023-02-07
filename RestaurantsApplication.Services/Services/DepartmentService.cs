@@ -44,7 +44,7 @@ namespace RestaurantsApplication.Services.Services
 
         public async Task DeleteAsync(int departmentId)
         {
-            _departmentRepo.DeleteAsync(departmentId);
+            await _departmentRepo.DeleteAsync(departmentId);
 
             await _departmentRepo.SaveChangesAsync();
         }
