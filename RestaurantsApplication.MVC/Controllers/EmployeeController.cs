@@ -75,7 +75,6 @@ namespace RestaurantsApplication.MVC.Controllers
             {
                 return RedirectToAction("Error", "Home", new { message = RetrievingEmployeesError });
             }
-
         }
 
         [HttpGet]
@@ -99,7 +98,6 @@ namespace RestaurantsApplication.MVC.Controllers
             {
                 return RedirectToAction("Error", "Home", new { message = CouldntLoadError });
             }
-
         }
 
         [HttpPost]
@@ -126,7 +124,10 @@ namespace RestaurantsApplication.MVC.Controllers
             }
             catch (Exception)
             {
-                return RedirectToAction("Error", "Home", new { message = CouldntProcessError });
+                return RedirectToAction("Error", "Home", new
+                {
+                    message = CouldntProcessError
+                });
             }
 
         }

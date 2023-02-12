@@ -71,7 +71,6 @@ namespace RestaurantsApplication.Repositories
             .SingleAsync();
 
             location.Name = dto.Name;
-            location.Code = dto.Code;
         }
 
         public async Task DeleteAsync(int locationId)

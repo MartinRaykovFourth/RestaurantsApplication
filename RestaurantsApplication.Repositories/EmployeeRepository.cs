@@ -105,7 +105,6 @@ namespace RestaurantsApplication.Repositories
 
             employee.FirstName = dto.FirstName;
             employee.LastName = dto.LastName;
-            employee.Code = dto.Code;
         }
 
         public async Task DeleteAsync(int employeeId)

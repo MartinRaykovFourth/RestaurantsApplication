@@ -15,7 +15,8 @@
 			</div>
 			<div class="mb-3">
 				<label asp-for="@Model.Code" class="form-label">Employee code</label>
-				<input asp-for="@Model.Code" class="form-control" aria-required="true" value="@Model.Code" />
+				<label asp-for="@Model.Code" class="form-control">@Model.Code</label>
+				<input asp-for="@Model.Code" value="@Model.Code" type="hidden" />
 				<span asp-validation-for="Code" class="text-danger"></span>
 			</div>
 			<input asp-for="@Model.Id" value="@Model.Id" type="hidden" />
